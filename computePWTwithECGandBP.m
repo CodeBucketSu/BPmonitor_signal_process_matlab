@@ -30,9 +30,11 @@ hasError = isTrue;
 %% 步骤6：根据需要画图
 if ifplot || isTrue
     fig = figure('Name', titleOfSignals);
-    subplot(211), drawSignalPeaksAndPeaksUsed(ecg, {ecg_peak}, {ecg_peak_used}, 'r');
-    subplot(212), drawSignalPeaksAndPeaksUsed(bp, {bp_peak, bp_valley, bp_key}, ...
+    subplot(311), drawSignalPeaksAndPeaksUsed(ecg, {ecg_peak}, {ecg_peak_used}, 'r');
+    subplot(312), drawSignalPeaksAndPeaksUsed(bp, {bp_peak, bp_valley, bp_key}, ...
         {bp_peak_used, bp_valley_used, bp_key_used}, 'b');
+    subplot(313), drawPWTTs({pwtPeak, pwtValley, pwtKey, pwtRise}, ...
+        {'pwtPeak', 'pwtValley', 'pwtKey', 'PRT'});
 else
     fig = 0;
 end
