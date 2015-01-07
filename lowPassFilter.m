@@ -1,0 +1,1 @@
+function datalp = lowPassFilter(data)load('LowPassCoefs.mat')datalp = filter(LowPassCoefs, 1, data);end
