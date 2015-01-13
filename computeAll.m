@@ -1,4 +1,4 @@
-function [HRs, PWTTs, MBPs, DBPs, SBPs, corrPwttHrs, meanHR, meanPWTT, meanBP, varHR, varPWTT, varBP, corrPwttBpTotal, corrPwttHrTotal, corrBpHrTotal, figCorr] = computeAll(filePath, fileNames, titleOfSignals)
+function [HRs, PWTTs, MBPs, DBPs, SBPs, corrPwttHrs, meanHR, meanPWTT, meanBP, varHR, varPWTT, varBP, corrPwttBpTotal, corrPwttHrTotal, corrBpHrTotal, figCorr] = computeAll(filePath, fileNames, needPlot, titleOfSignals)
 % computeAll 函数从文件中读取原始数据，计算血压、心率，12种脉搏波传播时间各自的均值，标准差，以及他们之间的相关系数
 % [HRs, PWTTs, MBPs, DBPs, SBPs, meanHR, meanPWTT, meanBP, varHR, varPWTT, varBP, corrPwttBp, corrPwttHr, corrBpHr] = computeAll(filePath, fileNames)
 % 返回值： 
@@ -38,7 +38,6 @@ for j = 1 : length(fileNames)
 end
 
 %% 初始化结果数组
-needPlot = 1;
 HRs = zeros(1, lenEvents);      %每次测量时间对应的心率
 PWTTs = zeros(12, lenEvents);   %每次测量事件对应的传播时间
 MBPs = zeros(1, lenEvents);     %每次测量事件对应的平均压
@@ -97,11 +96,15 @@ for j = 1 : length(fileNames)
             pwttNames = {'PWTT\_elbow\_peak', 'PWTT\_elbow\_valley', 'PWTT\_elbow\_key', 'PWTT\_elbow\_rise',...
                 'PWTT\_wrist\_peak', 'PWTT\_wrist\_valley', 'PWTT\_wrist\_key', 'PWTT\_wrist\_rise', ...
                 'PWTT\_bps\_peak', 'PWTT\_bps\_valley', 'PWTT\_bps\_key', 'PWTT\_bps\_rise'};
-            correlations = computePWTTCorrelationsWithHR(hr, pwtts, pwttNames); 
+            
+            [correlations, fig] = computePWTTCorrelationsWithHR(hr, pwtts, pwttNames, needPlot | hasError, titleOfSignals); 
+            if (needPlot || hasError)
+                figures(end + 1) = fig;
+            end
 
             %% 让用户判定检测数据是否可用,仅当可用时才记录数据
 
-            if ~hasError || hasError && input('本次事件的数据检测是否可用？（是：1， 否：其他）') == 1 
+            if ~hasError || (needPlot || hasError) && input('本次事件的数据检测是否可用？（是：1， 否：其他）') == 1 
                 eventsCnt = eventsCnt + 1;
                 %% 计录每次测量事件对应的传播时间和心率的相关系数
                 corrPwttHrs(:, eventsCnt) = correlations;
@@ -143,6 +146,6 @@ varPWTT = (std(PWTTs.')).';
 
 
 %% 计算12种pwtt和实测血压的相关性，计算12组CorrBpHr与心率的相关性， 计算血压与心率的相关性
-[corrPwttBpTotal, corrPwttHrTotal, corrBpHrTotal, figCorr] = computePWTTCorrelationsWithBP(MBPs, PWTTs, pwttNames, HRs, titleOfSignals);
+[corrPwttBpTotal, corrPwttHrTotal, corrBpHrTotal, figCorr] = computePWTTCorrelationsWithBP(MBPs, PWTTs, pwttNames, HRs, mean(corrPwttHrs, 2), titleOfSignals);
 
 end

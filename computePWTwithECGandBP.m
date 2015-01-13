@@ -19,6 +19,7 @@ ecg = sigfilter(ecg);
 [pwtKey, ecg_peak_used, bp_key_used] = compute_pwtt(ecg_peak, bp_key, 50, 400);
 [pwtRise, bp_valley_used1, bp_peak_used1] = compute_pwtt(bp_valley, bp_peak, 10, 200);
 
+
 %% 步骤5：验证步骤4是否排除了太多点
 isTrue = 0;
 isTrue = isTrue || isTooManyPeaksRemoved({ecg_peak, bp_peak}, {ecg_peak_used, bp_peak_used});
@@ -42,7 +43,7 @@ end
 %% 步骤7：去除统计异常点
 pwtPeak = removeOutlier(pwtPeak, 2, 10);
 pwtValley = removeOutlier(pwtValley, 2, 10);
-pwtKey = removeOutlier(pwtKey, 2, 10);
+% pwtKey = removeOutlier(pwtKey, 2, 10);
 pwtRise = removeOutlier(pwtRise, 2, 10);
 
 
