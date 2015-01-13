@@ -64,7 +64,7 @@ if calcNotch>0
     tmp2 = dicPeaks(indexes,2) - valleys(indexes,2);
     features{5}  = [peaks(indexes,1) tmp2];
     % 计算重博波相对高度
-    features{6} =  [peaks(indexes,1) tmp2./tmp];
+    features{6} =  [peaks(indexes,1) tmp2./tmp];    
     
     % 计算K3
     features(13) =  [peaks(indexesEndWith0,1) (dicPeaks(:,2)-valleys([0;indexesEndWith0(1:N-1)],2))...
@@ -82,6 +82,9 @@ else
     features{5}=[];
     features{6}=[];
     
+    features{9}=[];
+    features{10}=[];
+    
     features{13}=[];
 end
 
@@ -91,19 +94,33 @@ features{7} = peaks(1:N-1,:);
 features{8} = features{7};
 features{9} = peaks(indexesEndWith0,:);
 features{10} = features{9};
-for i=14:25
+features{28} = features{9};
+features{29} = features{9};
+features{30} = features{9};
+
+for i=14:27
     features{i} = peaks(1:N-1,:);
 end
 for i=1:N-1
    % 计算脉搏波面积
    features{7}(i,2) = calcArea(pw(valleys(i,1):valleys(i+1,1)) - minPW);
-   
     % 计算升支相对面积
     features{8}(i,2) = calcArea(pw(valleys(i,1):peaks(i,1)) - minPW) / features{7}(i,2) ;
-
-    if dicNotchs(i,1) ~= -1 %说明这里能够计算与降中峽相关的两个相对面积
-        features{9}(j,2) = calcArea(pw(peaks(i,1),dicNotchs(i,1)) - minPW) / features{7}(i,2) ;
-        features{10}(j,2) = calcArea(pw(dicNotchs(i,1),valleys(i+1,1)) - minPW) / features{7}(i,2) ;
+    if dicNotchs(i,1) ~= -1 
+        %计算与降中峽相关的两个相对面积
+        features{9}(j,2) = calcArea(pw(peaks(i,1):dicNotchs(i,1)) - minPW) / features{7}(i,2) ;
+        features{10}(j,2) = calcArea(pw(dicNotchs(i,1):valleys(i+1,1)) - minPW) / features{7}(i,2) ;
+        
+       % 计算G
+        features{28}(j,2) = (valleys(i+1,1) - dicNotchs(i,1))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1))...
+            - pw(dicNotchs(i,1));
+       % 计算LeBA
+       tmp =(valleys(i+1,1) - (peaks(i,1):valleys(i+1,1)))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1))...
+            - pw(peaks(i,1):valleys(i+1,1));
+       features{29}(j,2) = sqrt(tmp(:)'*tmp(:)/length(tmp));
+       % 计算TmCpt
+       tmp = pw(dicNotchs(i,1):dicNotchs(i,1)+160) - pw(dicNotchs(i,1));
+       features{30}(j,2) = sum(tmp>0);
         j = j+1;
     end
     
@@ -121,7 +138,12 @@ for i=1:N-1
    features{23}(i,2) =valleys(i+1,1) - peaks(i,1) - detectKpercentKeyPoint(pw(peaks(i,1):valleys(i+1,1)),0.50);
    features{24}(i,2) =valleys(i+1,1) - peaks(i,1) - detectKpercentKeyPoint(pw(peaks(i,1):valleys(i+1,1)),0.66);
    features{25}(i,2) =valleys(i+1,1) - peaks(i,1) - detectKpercentKeyPoint(pw(peaks(i,1):valleys(i+1,1)),0.75);  
-
+   
+   % 计算AmBE 
+   features{26}(i,2) = mean(pw(peaks(i,1):peaks(i,1)+99) - pw(peaks(i,1)+100));
+   
+   % 计算DfAmBE ??? 可以直接用BE斜率替代吧
+   features{27}(i,2) = mean(pw(peaks(i,1):peaks(i,1)+99) - pw(peaks(i,1)+1:peaks(i,1)+100));
 end
 
 %% 计算K1
