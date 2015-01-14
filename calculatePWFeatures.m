@@ -34,17 +34,21 @@ featureNames = {'PEAK-HEiGHT','PEAK-RiSE-TiME','DiCNOTCH-HEiGHT','DiCNOTCH-RELAT
 'K1','K2','K3','SW10','SW25','SW33','SW50','SW66','SW75','DW10','DW25','DW33','DW50','DW66','DW75','AmBE','DfAmBE','G','LeBA','TmCpt'...
 };
 features = featureNames;
+N = length(peaks(:,1));
+
+dicNotchs = dicNotchs(1:N,:);
+dicPeaks = dicPeaks(1:N,:);
+
 indexes = dicNotchs(:,1)~=-1;
 %将indexes最后一个数字置零形成的数组，用于避免计算需要波谷的参数时越界
 indexesEndWith0 = indexes;
 indexesEndWith0(end) = 0;
-N = length(peaks(:,1));
 %notchLen = sum(indexes);
 minPW = min(pw);
 
 %% 判断这段数据是否能够用于计算降中峽相关特征
 calcNotch = 1;
-if length(dicNotchs)<1
+if length(dicNotchs)<3
     calcNotch=0;
 end
 
@@ -57,7 +61,7 @@ features{2} = peaks(:,1)*[1,1] - valleys(:,1)*[0,1];
 %%
 if calcNotch>0
     %计算降中峽高度
-    tmp1 = dicNotches(indexes,2) - valleys(indexes,2);
+    tmp1 = dicNotchs(indexes,2) - valleys(indexes,2);
     features{3} = [peaks(indexes,1) tmp1];
     % 计算降中峽相对高度
     tmp = features{1}*[0;1];
@@ -73,11 +77,11 @@ if calcNotch>0
 %     features(13) =  [peaks(indexesEndWith0,1) (dicPeaks(:,2)-valleys([0;indexesEndWith0(1:N-1)],2))...
 %       ./(valleys([0;indexesEndWith0(1:N-1)],1) - dicPeaks(:,1))];
     if dicPeaks(N,1) == -1 %最后一个波形没有重博波
-          features(13) =  [peaks(indexes,1) (dicPeaks(:,2)-valleys([0;indexes(1:N-1)],2))...
-              ./(valleys([0;indexes(1:N-1)],1) - dicPeaks(:,1))];
+          features{13} =  [peaks(indexes,1) (dicPeaks(:,2)-valleys(logical([0;indexes(1:N-1)]),2))...
+              ./(valleys(logical([0;indexes(1:N-1)]),1) - dicPeaks(:,1))];
     else
-        features(13) =  [peaks(indexes(1:N-1),1) (dicPeaks(1:N-1,2)-valleys([0;indexes(1:N-2);0],2))...
-              ./(valleys([0;indexes(1:N-2);0],1) - dicPeaks(1:N-1,1))];
+        features{13} =  [peaks(logical([indexes(1:N-1);0]),1) (dicPeaks(1:N-1,2)-valleys(logical([0;indexes(1:N-1)]),2))...
+              ./(valleys(logical([0;indexes(1:N-1)]),1) - dicPeaks(1:N-1,1))];
     end
 else
     features{3}=[];
@@ -122,8 +126,8 @@ for i=1:N-1
         features{28}(j,2) = (valleys(i+1,1) - dicNotchs(i,1))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1))...
             - pw(dicNotchs(i,1));
        % 计算LeBA
-       tmp =(valleys(i+1,1) - (peaks(i,1):valleys(i+1,1)))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1))...
-            - pw(peaks(i,1):valleys(i+1,1));
+       tmp =(valleys(i+1,1) - (peaks(i,1):valleys(i+1,1)))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1));
+       tmp = tmp(:)  - pw(peaks(i,1):valleys(i+1,1));
        features{29}(j,2) = sqrt(tmp(:)'*tmp(:)/length(tmp));
        % 计算TmCpt
        tmp = pw(dicNotchs(i,1):dicNotchs(i,1)+160) - pw(dicNotchs(i,1));
@@ -155,9 +159,9 @@ for i=1:N-1
 end
 
 %% 计算K1
-features(11)=[peaks(:,1) (peaks(:,2) - valleys(:,2))./(peaks(:,1) - valleys(:,1))] ;
+features{11}=[peaks(:,1) (peaks(:,2) - valleys(:,2))./(peaks(:,1) - valleys(:,1))] ;
 
 %% 计算K2
-features(12)=[peaks(1:N-1,1) (peaks(1:N-1,2) - valleys(2:peakLen,2))./...
-    (peaks(1:N-1,1) - valleys(2:peakLen,1))] ;
+features{12}=[peaks(1:N-1,1) (peaks(1:N-1,2) - valleys(2:N,2))./...
+    (peaks(1:N-1,1) - valleys(2:N,1))] ;
 
