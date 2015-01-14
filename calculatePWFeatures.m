@@ -44,6 +44,9 @@ minPW = min(pw);
 
 %% 判断这段数据是否能够用于计算降中峽相关特征
 calcNotch = 1;
+if length(dicNotchs)<1
+    calcNotch=0;
+end
 
 %% 计算主波高度
 features{1} = peaks - valleys(:,2)*[0,1];
@@ -86,6 +89,10 @@ else
     features{10}=[];
     
     features{13}=[];
+    
+    features{28}=[];
+    features{29}=[];
+    features{30}=[];
 end
 
 %% 
