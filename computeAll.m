@@ -44,6 +44,8 @@ MBPs = zeros(1, lenEvents);     %每次测量事件对应的平均压
 SBPs = zeros(1, lenEvents);     %每次测量事件对应的收缩压
 DBPs = zeros(1, lenEvents);     %每次测量事件对应的舒张压
 corrPwttHrs = zeros(12, 1);      %传播时间和心率的相关系数
+allFeatures_elbow = [];         %手肘脉搏波特征
+allFeatures_wrist = [];         %手腕脉搏波特征
 % 载入手臂处于：平放、下垂、上举 3种状态下测量的脉搏波和血压信号，并进行PWTTt的计算，
 % 并将每个血压信号与对应的PWTTt均值保存下来用于标定
 eventsCnt = 0;
@@ -100,6 +102,11 @@ for j = 1 : length(fileNames)
                 figures(end + 1) = plotPulseWaveFeatures(features_wrist, featureNames_wrist, titleOfSignals);
             end
             
+            if isempty(allFeatures_elbow)
+                allFeatures_elbow = zeros(length(features_elbow), lenEvents);
+                allFeatures_wrist = zeros(length(features_elbow), lenEvents);
+            end
+            
             
             %% 计算每次测量事件对应的传播时间和心率的相关系数
             pwtts = {PWTT_elbow_peak; PWTT_elbow_valley; PWTT_elbow_key; PWTT_elbow_rise; ...
@@ -115,9 +122,9 @@ for j = 1 : length(fileNames)
             end
 
             %% 让用户判定检测数据是否可用,仅当可用时才记录数据
-
             if ~hasError || (needPlot || hasError) && input('本次事件的数据检测是否可用？（是：1， 否：其他）') == 1 
                 eventsCnt = eventsCnt + 1;
+                
                 %% 计录每次测量事件对应的传播时间和心率的相关系数
                 corrPwttHrs(:, eventsCnt) = correlations;
 
@@ -129,6 +136,10 @@ for j = 1 : length(fileNames)
 
                 %% 记录每次测量事件对应的传播时间
                 PWTTs(:, eventsCnt) = computeMeanFeatures(pwtts);
+                
+                %% 记录每次测量事件对应的脉搏波的特征
+                allFeatures_elbow = computeMeanFeatures(features_elbow);
+                allFeatures_wrist = computeMeanFeatures(features_wrist);
 
                 %% 记录每次测量事件对应的心率
                 HRs(eventsCnt) = mean(hr(:, 2));

@@ -39,7 +39,7 @@ N = length(peaks(:,1));
 dicNotchs = dicNotchs(1:N,:);
 dicPeaks = dicPeaks(1:N,:);
 
-indexes = dicNotchs(:,1)~=-1;
+indexes = dicNotchs(:,1) > 0;
 %将indexes最后一个数字置零形成的数组，用于避免计算需要波谷的参数时越界
 indexesEndWith0 = indexes;
 indexesEndWith0(end) = 0;

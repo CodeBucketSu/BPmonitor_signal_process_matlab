@@ -112,6 +112,8 @@ for i = 1 : num
         dpIdx = find(data4dp == max(data4dp), 1, 'first');
         dpIdx = dpIdx + dnIdx;
         dicPeak(i, :) = [dpIdx, data(dpIdx)];
+    elseif isempty(dnIdx)
+        dicPeak(i, :) = [-1, 0];
     end
     
 end
@@ -121,6 +123,8 @@ peak = peak(1:num, :);
 valley = valley(1:num, :);
 key = key(1:num, :);
 rise = rise(1:num, :);
+dicNotch = dicNotch(1:num, :);
+dicPeak = dicPeak(1:num, :);
 
 end
 
