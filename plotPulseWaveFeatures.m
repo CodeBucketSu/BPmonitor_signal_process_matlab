@@ -1,0 +1,17 @@
+function [fig] = plotPulseWaveFeatures(features, featureNames, titleOfSignals)
+% plotPulseWaveFeatures(features, featureNames) ´òÓ¡Âö²«²¨ÌØÕ÷
+
+fig = figure('Name', [titleOfSignals, ' - features of pulse wave'], ...
+    'OuterPos', get(0, 'ScreenSize'));
+
+len = length(features);
+for i = 1 : len
+    subplot(5, 6, i);
+    feature = features{i};
+    if ~ isempty(features)
+        plot(features(:, 1), feature(:, 2));
+    end
+    title(featureNames{i});
+end
+
+end

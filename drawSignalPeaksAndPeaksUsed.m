@@ -7,7 +7,7 @@ function drawSignalPeaksAndPeaksUsed(signal, peaks, peaks_used, color)
 % peaks_name：关键点对应的名字
 % color：对应的颜色
 
-markers = {'+', '*', '.', 'x', 's', 'd', 'p', 'h'};
+markers = {'+', '*', '.', 'x',  'p', 'h'};%'s', 'd',
 plots = zeros(length(peaks) + 2);
 hold on
 plots(1) = plot(signal, 'k');

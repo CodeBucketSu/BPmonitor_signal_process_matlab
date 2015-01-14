@@ -1,4 +1,4 @@
-function [peak,valley,key, rise] = detectPeaksInPulseWave(data)
+function [peak,valley,key, rise, dicNotch, dicPeak] = detectPeaksInPulseWave(data)
 % detectPeaksInPulseWave 检测脉搏波的波峰、波谷、10%关键点
 
 len = length(data);
@@ -7,6 +7,8 @@ peak = zeros(maxLenRet, 2);
 valley = peak;
 key = peak;
 rise = peak;
+dicNotch = peak;
+dicPeak = peak;
 num = 0;
 
 %% 步骤1：利用翼函数缩小波峰可能存在的范围
@@ -78,17 +80,39 @@ for i = 1 : num
     end
     
     %% 步骤4：定位10%点，位于波谷点和波峰之间，幅值10%处
-    keyVal = data(vIdx) + 0.1 * (data(pIdx) - data(vIdx));
-    delta4key = abs(data(vIdx : pIdx) - keyVal);
-    idxKey = find(delta4key == min(delta4key), 1,  'first');
-    kIdx = pIdx - (length(delta4key) - idxKey);
+    idxKey = detectKpercentKeyPoint(data(vIdx : pIdx), 0.1);
+    kIdx = pIdx - (pIdx - vIdx + 1 - idxKey);
     key(i, :) = [kIdx, data(kIdx)];
     
-    %% 步骤5：定位雪绿最大点，位于波谷和波峰之间，1阶导数最大点
+    %% 步骤5：定位斜率最大点，位于波谷和波峰之间，1阶导数最大点
     diff4rise = diff(data(vIdx : pIdx));
     idxRise = find(diff4rise == max(diff4rise), 1, 'first');
-    rIdx = pIdx - (length(delta4key) - idxRise);
+    rIdx = pIdx - (pIdx - vIdx + 1 - idxRise);
     rise(i, :) = [rIdx, data(rIdx)];
+    
+    %% 步骤6：定位降中峡，满足以下规则：
+    %          1，在波峰后100--300个点之间
+    %          2，第一个波谷（斜率由负转正）
+    data4dn = data(pIdx + 100 : pIdx + 300);
+    diff4dn = diff(data4dn);
+    diff4dn = [0; diff4dn];
+    wing4dn = wingFunc(data4dn, 1);
+    idx4dn = (diff4dn < 0) .* (wing4dn > 0);
+    dnIdx = find(idx4dn>0, 1, 'first');
+    if (isempty(dnIdx))
+        dicNotch(i, :) = [-1, 0];
+    else
+        dnIdx = dnIdx  + pIdx + 99;
+        dicNotch(i, :) = [dnIdx, data(dnIdx)];
+    end
+    
+    %% 步骤7：定位重博波波峰
+    if(~isempty(dnIdx) && dnIdx + 300 < length(data))
+        data4dp = data(dnIdx + 1 : dnIdx + 300);
+        dpIdx = find(data4dp == max(data4dp), 1, 'first');
+        dpIdx = dpIdx + dnIdx;
+        dicPeak(i, :) = [dpIdx, data(dpIdx)];
+    end
     
 end
 
@@ -97,5 +121,16 @@ peak = peak(1:num, :);
 valley = valley(1:num, :);
 key = key(1:num, :);
 rise = rise(1:num, :);
+
+end
+
+function [idx] = detectKpercentKeyPoint(risingEdge, percent)
+% [idx] = detectKpercentKeyPoint(data, K) 在上升沿中定位幅值百分点
+% idx：位置
+% risingEdge：上升沿数据，头是最小值，尾是最大值
+% percent：百分比
+keyVal = risingEdge(1) + percent * (risingEdge(end) - risingEdge(1));
+delta4key = abs(risingEdge - keyVal);
+idx = find(delta4key == min(delta4key), 1,  'first');
 
 end

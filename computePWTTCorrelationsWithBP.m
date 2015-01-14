@@ -1,4 +1,4 @@
-function [corrBP2PWTT, corrPWTT2HR, corrBP2HR, fig] = computePWTTCorrelationsWithBP(bp, pwtts, pwttNames, hr, titleOfSignals)
+function [corrBP2PWTT, corrPWTT2HR, corrBP2HR, fig] = computePWTTCorrelationsWithBP(bp, pwtts, pwttNames, hr, corrPwttHrs, titleOfSignals)
 
 bpNomal = (bp - mean(bp)) ./ std(bp);
 hrNomal = (hr - mean(hr)) ./ std(hr);
@@ -32,9 +32,8 @@ for i = 1 : len
     plot(hrNomal, 'g');
     plot(hrNomal, 'go');
     title({['[meanPWTT and BP:', name];...
-         ['corrBP2PWTT: ', num2str(corrBP2PWTT(i))];...
-%         ['corrBP2HR: ', num2str(corrBP2HR(i))];...
-%         ['corrPWTT2HR: ', num2str(corrPWTT2HR(i))]
+         ['corrBP2PWTT: ', num2str(corrBP2PWTT(i)), '   meanCorrPWTT2PWTT: ', num2str(corrPwttHrs(i))];...
+         ['corrPWTT2HR: ', num2str(corrPWTT2HR(i)), '   corrBP2HR: ', num2str(corrBP2HR(i))];...
     });
     
     

@@ -1,10 +1,15 @@
-function correlations = computePWTTCorrelationsWithHR(hr, pwtts, pwttNames)
+function [correlations, fig] = computePWTTCorrelationsWithHR(hr, pwtts, pwttNames, needPlot, titleOfSignals)
 
 hrNomal = zeros(size(hr));
 hrNomal(:, 1) = hr(:, 1);
 hrNomal(:, 2) = (hr(:, 2) - mean(hr(:, 2))) ./ std(hr(:, 2));
 
-% figure
+if needPlot
+    fig = figure('Name', [titleOfSignals, ' - Correlations between PWTT and HR.'],...
+        'Outerpos', get(0, 'ScreenSize'));
+else
+    fig = 0;
+end
 len = length(pwtts);
 correlations = zeros(len, 1);
 for i = 1 : len
@@ -25,13 +30,14 @@ for i = 1 : len
     correlations(i) = corr(hrMap(:, 2), pwttMap(:, 2));
     
     %% ≤Ω÷Ë3£∫ª≠Õº
-%     subplot(3, 4, i), 
-%     plot(pwttNormal(:, 1), pwttNormal(:, 2), 'b'); hold on,
-%     plot(pwttNormal(:, 1), pwttNormal(:, 2), 'b*'); hold on,
-%     plot(hrNomal(:, 1), hrNomal(:, 2), 'r');
-%     plot(hrNomal(:, 1), hrNomal(:, 2), 'ro');
-%     title([name, ' CORR: ', num2str(correlations(i))]);
-    
+    if needPlot
+        subplot(3, 4, i), 
+        plot(pwttNormal(:, 1), pwttNormal(:, 2), 'b'); hold on,
+        plot(pwttNormal(:, 1), pwttNormal(:, 2), 'b*'); hold on,
+        plot(hrNomal(:, 1), hrNomal(:, 2), 'r');
+        plot(hrNomal(:, 1), hrNomal(:, 2), 'ro');
+        title([name, ' CORR: ', num2str(correlations(i))]);
+    end
     
 end     %end for 
 
