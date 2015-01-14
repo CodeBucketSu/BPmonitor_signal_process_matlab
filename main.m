@@ -20,7 +20,7 @@ set(figCorr, 'PaperPositionMode', 'auto');
 saveas(figCorr, [filePathForSave, '/标定数据：PWTT与BP的相关性'], 'jpg');
 
 %% 处理静止（改变姿态）测试集信号
-fileNames = {'gesture.mat', 'gesture1.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hs.mat', 'hs.mat'
+fileNames = {'static.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hs.mat', 'hs.mat'
 [HRs_static, PWTTs_static, MBPs_static, DBPs_static, SBPs_static, corrPwttHrs_static, ... 
     meanHR_static, meanPWTT_static, meanBP_static, varHR_static, varPWTT_static, varBP_static, ...
     corrPwttBpTotal_static, corrPwttHrTotal_static, corrBpHrTotal_static, figCorr] = computeAll(filePath, fileNames, '静止或改变姿态');

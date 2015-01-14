@@ -58,6 +58,7 @@ for j = 1 : length(fileNames)
         if strcmp(event('Event'),  'StartMeasure')
             startTime = event('Time');
         end
+        
         if strcmp(event('Event'),  'FinishedMeasure') && length(event.keys()) == 4
             endTime = event('Time');
             
