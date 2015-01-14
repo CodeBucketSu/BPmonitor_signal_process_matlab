@@ -70,15 +70,15 @@ if calcNotch>0
     features{6} =  [peaks(indexes,1) tmp2./tmp];    
     
     % 计算K3
-    features(13) =  [peaks(indexesEndWith0,1) (dicPeaks(:,2)-valleys([0;indexesEndWith0(1:N-1)],2))...
-      ./(valleys([0;indexesEndWith0(1:N-1)],1) - dicPeaks(:,1))];
-%     if dicPeaks(N,1) == -1 %最后一个波形没有重博波
-%           features(13) =  [peaks(indexes,1) (dicPeaks(:,2)-valleys([0;indexes(1:N-1)],2))...
-%               ./(valleys([0;indexes(1:N-1)],1) - dicPeaks(:,1))];
-%     else
-%         features(13) =  [peaks(indexes(1:N-1),1) (dicPeaks(1:N-1,2)-valleys([0;indexes(1:N-2);0],2))...
-%               ./(valleys([0;indexes(1:N-2);0],1) - dicPeaks(1:N-1,1))];
-%     end
+%     features(13) =  [peaks(indexesEndWith0,1) (dicPeaks(:,2)-valleys([0;indexesEndWith0(1:N-1)],2))...
+%       ./(valleys([0;indexesEndWith0(1:N-1)],1) - dicPeaks(:,1))];
+    if dicPeaks(N,1) == -1 %最后一个波形没有重博波
+          features(13) =  [peaks(indexes,1) (dicPeaks(:,2)-valleys([0;indexes(1:N-1)],2))...
+              ./(valleys([0;indexes(1:N-1)],1) - dicPeaks(:,1))];
+    else
+        features(13) =  [peaks(indexes(1:N-1),1) (dicPeaks(1:N-1,2)-valleys([0;indexes(1:N-2);0],2))...
+              ./(valleys([0;indexes(1:N-2);0],1) - dicPeaks(1:N-1,1))];
+    end
 else
     features{3}=[];
     features{4}=[];
