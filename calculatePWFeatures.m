@@ -36,10 +36,15 @@ featureNames = {'PEAK-HEiGHT','PEAK-RiSE-TiME','DiCNOTCH-HEiGHT','DiCNOTCH-RELAT
 features = featureNames;
 N = length(peaks(:,1));
 
+%降中峽/重博波预处理
 dicNotchs = dicNotchs(1:N,:);
 dicPeaks = dicPeaks(1:N,:);
+if dicNotchs(1,1)>0 && dicNotchs(1,1)<valleys(1,1)% 说明第一个波形有降中峽但没有波谷
+    dicNotchs(1,1) = -1;
+    dicPeaks(1,1) = -1;
+end
 
-indexes = dicNotchs(:,1)~=-1;
+indexes = dicNotchs(:,1)>-1;
 %将indexes最后一个数字置零形成的数组，用于避免计算需要波谷的参数时越界
 indexesEndWith0 = indexes;
 indexesEndWith0(end) = 0;
@@ -76,12 +81,12 @@ if calcNotch>0
     % 计算K3
 %     features(13) =  [peaks(indexesEndWith0,1) (dicPeaks(:,2)-valleys([0;indexesEndWith0(1:N-1)],2))...
 %       ./(valleys([0;indexesEndWith0(1:N-1)],1) - dicPeaks(:,1))];
-    if dicPeaks(N,1) == -1 %最后一个波形没有重博波
-          features{13} =  [peaks(indexes,1) (dicPeaks(:,2)-valleys(logical([0;indexes(1:N-1)]),2))...
-              ./(valleys(logical([0;indexes(1:N-1)]),1) - dicPeaks(:,1))];
-    else
-        features{13} =  [peaks(logical([indexes(1:N-1);0]),1) (dicPeaks(1:N-1,2)-valleys(logical([0;indexes(1:N-1)]),2))...
-              ./(valleys(logical([0;indexes(1:N-1)]),1) - dicPeaks(1:N-1,1))];
+    if indexes(end) <= 0 %最后一个波形没有重博波
+          features{13} =  [peaks(indexes,1) (dicPeaks(indexes,2)-valleys(logical([0;indexes(1:N-1)]),2))...
+              ./(valleys(logical([0;indexes(1:N-1)]),1) - dicPeaks(indexes,1))];
+    else        
+        features{13} =  [peaks(logical([indexes(1:N-1);0]),1) (dicPeaks(logical([indexes(1:N-1);0]),2)...
+            -valleys(logical([0;indexes(1:N-1)]),2))./(valleys(logical([0;indexes(1:N-1)]),1) - dicPeaks(logical([indexes(1:N-1);0]),1))];
     end
 else
     features{3}=[];
@@ -117,7 +122,7 @@ for i=1:N-1
    features{7}(i,2) = calcArea(pw(valleys(i,1):valleys(i+1,1)) - minPW);
     % 计算升支相对面积
     features{8}(i,2) = calcArea(pw(valleys(i,1):peaks(i,1)) - minPW) / features{7}(i,2) ;
-    if dicNotchs(i,1) ~= -1 
+    if dicNotchs(i,1) > 0 
         %计算与降中峽相关的两个相对面积
         features{9}(j,2) = calcArea(pw(peaks(i,1):dicNotchs(i,1)) - minPW) / features{7}(i,2) ;
         features{10}(j,2) = calcArea(pw(dicNotchs(i,1):valleys(i+1,1)) - minPW) / features{7}(i,2) ;
