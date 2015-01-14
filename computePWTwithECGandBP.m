@@ -14,10 +14,10 @@ ecg = sigfilter(ecg);
 [bp_peak, bp_valley, bp_key, bp_rise]= detectPeaksInPulseWave(bp);
 
 %% 步骤4：计算pwt,并验证是否排除了太多点
-[pwtPeak, ~, bp_peak_used] = compute_pwtt(ecg_peak, bp_peak, 100, 400);
-[pwtValley, ~, bp_valley_used] = compute_pwtt(ecg_peak, bp_valley, 50, 400);
-[pwtKey, ecg_peak_used, bp_key_used] = compute_pwtt(ecg_peak, bp_key, 50, 400);
-[pwtRise, bp_valley_used1, bp_peak_used1] = compute_pwtt(bp_valley, bp_peak, 10, 200);
+[pwtPeak, ~, bp_peak_used] = computeTimeInterval(ecg_peak, bp_peak, 100, 400);
+[pwtValley, ~, bp_valley_used] = computeTimeInterval(ecg_peak, bp_valley, 50, 400);
+[pwtKey, ecg_peak_used, bp_key_used] = computeTimeInterval(ecg_peak, bp_key, 50, 400);
+[pwtRise, bp_valley_used1, bp_peak_used1] = computeTimeInterval(bp_valley, bp_peak, 10, 200);
 
 
 %% 步骤5：验证步骤4是否排除了太多点

@@ -1,4 +1,4 @@
-function [PWTT, peakStartUsed, peakEndUsed] = compute_pwtt(peakStart, peakEnd, minPWTT, maxPWTT)
+function [PWTT, peakStartUsed, peakEndUsed] = computeTimeInterval(peakStart, peakEnd, minPWTT, maxPWTT)
 
 %% 步骤1：寻找对应点
 [peakStartUsed, peakEndUsed] = mapSignals(peakStart, peakEnd);

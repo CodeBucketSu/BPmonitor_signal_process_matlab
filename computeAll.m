@@ -89,6 +89,17 @@ for j = 1 : length(fileNames)
                 figures(end + 1) = fig;
             end
             
+            %% 分别从手肘和手腕处的脉搏波中提取波形特征
+            [features_elbow, featureNames_elbow]  = computeFeaturesWithPulseWave(bpElbow(startTime:endTime));
+            if (needPlot || err)
+                figures(end + 1) = plotPulseWaveFeatures(features_elbow, featureNames_elbow, titleOfSignals);
+            end
+            [features_wrist, featureNames_wrist]  = computeFeaturesWithPulseWave(bpWrist(startTime:endTime));
+            if (needPlot || err)
+                figures(end + 1) = plotPulseWaveFeatures(features_wrist, featureNames_wrist, titleOfSignals);
+            end
+            
+            
             %% 计算每次测量事件对应的传播时间和心率的相关系数
             pwtts = {PWTT_elbow_peak; PWTT_elbow_valley; PWTT_elbow_key; PWTT_elbow_rise; ...
                 PWTT_wrist_peak; PWTT_wrist_valley; PWTT_wrist_key; PWTT_wrist_rise;...
@@ -116,7 +127,7 @@ for j = 1 : length(fileNames)
                 DBPs(eventsCnt) = BPdia;
 
                 %% 记录每次测量事件对应的传播时间
-                PWTTs(:, eventsCnt) = computeMeanPWTTs(pwtts);
+                PWTTs(:, eventsCnt) = computeMeanFeatures(pwtts);
 
                 %% 记录每次测量事件对应的心率
                 HRs(eventsCnt) = mean(hr(:, 2));
