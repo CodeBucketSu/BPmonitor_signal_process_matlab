@@ -33,7 +33,8 @@ for i = 1 : length(formulas)
     plot(estBPs(i, :), colorsdot{i + 1});
     
     % 构建标题
-    ttl{i} = [formulas{i}, ': ME = ', num2str(MEs(i, :),formatSpec), ', VE = ', num2str(SVEs(i, :),formatSpec), ',CORR = ', num2str(CORRs(i, :),'%.3f')];
+    ttl{i} = ['ME = ', num2str(MEs(i, :),formatSpec), ', VE = ', num2str(SVEs(i, :),formatSpec), ',CORR = ', num2str(CORRs(i, :),'%.3f')];
+        
 end
 ttl{end + 1} = ['   meanCorrPWTT2PWTT: ', num2str(corrPwttHr)];
 legend(plots, ['measured', formulas]);

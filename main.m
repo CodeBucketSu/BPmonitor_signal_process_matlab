@@ -47,11 +47,11 @@ saveas(fig, [filePathForSave, '/标定数据：标定后估计血压'], 'fig');
 set(fig, 'PaperPositionMode', 'auto');
 saveas(fig, [filePathForSave, '/标定数据：标定后估计血压'], 'jpg');
 %% 用静止数据验证
-[MSEs_static, MEs_static, SVEs_static, CORRs_static, figEst] = calibrateAndComputeBPwith12PWTTsAndDifferentModel...
+[MSEs_static, MEs_static, SVEs_static, CORRs_static, figEst] = calibrateAndComputeBPwithFeaturesAndDifferentModel...
     (BPs(3, :), PWTTs, BPs_static(3, :), PWTTs_static, formulas, PWTTstats_static_static(:, 3), '静止或改变姿态：用PWTT估计血压');
 % saveFigure(figCorr, filePathForSave, '静止或改变姿态：标定后估计血压');
 
-[MSEs_static, MEs_static, SVEs_static, CORRs_static, figEst] = calibrateAndComputeBPwith12PWTTsAndDifferentModel...
+[MSEs_static, MEs_static, SVEs_static, CORRs_static, figEst] = calibrateAndComputeBPwithFeaturesAndDifferentModel...
     (BPs(3, :), PWFs_wrst, BPs_static(3, :), PWFs_wrst_static, formulas, PWFstat_wrst_static(:, 3), '静止或改变姿态：用PWF估计血压');
 
 % % 用憋气数据验证
