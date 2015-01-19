@@ -29,8 +29,7 @@ function [features,featureNames] = calculatePWFeatures(pw,peaks,valleys,dicNotch
 %     TmCpt	TmCpt
 
 %% 初始化
-featureNames = {'PEAK-HEiGHT','PEAK-RiSE-TiME','DiCNOTCH-HEiGHT','DiCNOTCH-RELATiVE-HEiGHT','DiCPEAK-HEiGHT',...
-'DiCPEAK-RELATiVE-HEiGHT','PULSE-WAVE-AREA','RiSE-RELATiVE-AREA','DiCEND-RELATiVE-AREA','DiASTOLiC-RELATiVE-AREA',...
+featureNames = {'PH','PRT','DNH','DNHr','DPH','DPHr','PWA','RAr','DscAr','DiaAr',...
 'K1','K2','K3','SW10','SW25','SW33','SW50','SW66','SW75','DW10','DW25','DW33','DW50','DW66','DW75','AmBE','DfAmBE','G','LeBA','TmCpt'...
 };
 features = featureNames;
@@ -44,7 +43,7 @@ if dicNotchs(1,1)>0 && dicNotchs(1,1)<valleys(1,1)% 说明第一个波形有降中峽但没有
     dicPeaks(1,1) = -1;
 end
 
-indexes = dicNotchs(:,1)>-1;
+indexes = dicNotchs(:,1) > 0;
 %将indexes最后一个数字置零形成的数组，用于避免计算需要波谷的参数时越界
 indexesEndWith0 = indexes;
 indexesEndWith0(end) = 0;
