@@ -27,10 +27,12 @@ function [features,featureNames] = calculatePWFeatures(pw,peaks,valleys,dicNotch
 %     G	G
 %     LeBA	LeBA
 %     TmCpt	TmCpt
+%     Kval K值
 
 %% 初始化
 featureNames = {'PH','PRT','DNH','DNHr','DPH','DPHr','PWA','RAr','DscAr','DiaAr',...
-'K1','K2','K3','SW10','SW25','SW33','SW50','SW66','SW75','DW10','DW25','DW33','DW50','DW66','DW75','AmBE','DfAmBE','G','LeBA','TmCpt'...
+'K1','K2','K3','SW10','SW25','SW33','SW50','SW66','SW75','DW10','DW25','DW33','DW50','DW66','DW75',...
+'AmBE','DfAmBE','G','LeBA','TmCpt','Kval'...
 };
 features = featureNames;
 N = length(peaks(:,1));
@@ -107,6 +109,7 @@ end
 j=1;
 features{7} = peaks(1:N-1,:);
 features{8} = features{7};
+features{31} = features{7};
 features{9} = peaks(indexesEndWith0,:);
 features{10} = features{9};
 features{28} = features{9};
@@ -169,3 +172,5 @@ features{11}=[peaks(:,1) (peaks(:,2) - valleys(:,2))./(peaks(:,1) - valleys(:,1)
 features{12}=[peaks(1:N-1,1) (peaks(1:N-1,2) - valleys(2:N,2))./...
     (peaks(1:N-1,1) - valleys(2:N,1))] ;
 
+%% 计算K值
+features{31}(:,2)= (features{7}(i,2)./diff(valleys(:,1))-valleys(1:end-1,1))./features{1}(1:end-1,2);
