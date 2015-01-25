@@ -119,7 +119,12 @@ features{30} = features{9};
 for i=14:27
     features{i} = peaks(1:N-1,:);
 end
+%% save the sum of each pulse wave
+tmp3 = zeros(N-1,1);
+
 for i=1:N-1
+   % The Sum
+   tmp3(i) = sum(pw(valleys(i,1):valleys(i+1,1)));
    % 计算脉搏波面积
    features{7}(i,2) = calcArea(pw(valleys(i,1):valleys(i+1,1)) - minPW);
     % 计算升支相对面积
@@ -173,4 +178,4 @@ features{12}=[peaks(1:N-1,1) (peaks(1:N-1,2) - valleys(2:N,2))./...
     (peaks(1:N-1,1) - valleys(2:N,1))] ;
 
 %% 计算K值
-features{31}(:,2)= (features{7}(i,2)./diff(valleys(:,1))-valleys(1:end-1,1))./features{1}(1:end-1,2);
+features{31}(:,2)= (tmp3./diff(valleys(:,1))-valleys(1:end-1,2))./features{1}(1:end-1,2);
