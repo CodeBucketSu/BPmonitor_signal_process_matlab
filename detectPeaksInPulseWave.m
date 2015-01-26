@@ -91,9 +91,17 @@ for i = 1 : num
     rise(i, :) = [rIdx, data(rIdx)];
     
     %% 步骤6：定位降中峡，满足以下规则：
-    %          1，在波峰后100--300个点之间
+    %          1，在波峰后100--300个点之间 --> 改为波峰后（startScale--endScale）*
+    %          WaveLength个点之间
     %          2，第一个波谷（斜率由负转正）
-    data4dn = data(pIdx + 100 : pIdx + 300);
+    startScale =3/16;
+    endScale = 9/16;
+    waveLen=500;
+    if i<num
+        waveLen = peak(i+1,1) - pIdx;
+    end
+    %data4dn = data(pIdx + 100 : pIdx + 300);
+    data4dn = data(pIdx + floor(waveLen * startScale) : floor(pIdx + waveLen * endScale));
     diff4dn = diff(data4dn);
     diff4dn = [0; diff4dn];
     wing4dn = wingFunc(data4dn, 1);
@@ -102,7 +110,7 @@ for i = 1 : num
     if (isempty(dnIdx))
         dicNotch(i, :) = [-1, 0];
     else
-        dnIdx = dnIdx  + pIdx + 99;
+        dnIdx = dnIdx  + pIdx + floor(waveLen * startScale) - 1;
         dicNotch(i, :) = [dnIdx, data(dnIdx)];
     end
     
@@ -114,132 +122,15 @@ for i = 1 : num
         dicPeak(i, :) = [dpIdx, data(dpIdx)];
     elseif isempty(dnIdx)
         dicPeak(i, :) = [-1, 0];
-
-        dicPeak(i, :) = [-1, 0];
-        
-        % In the new method, the peak and notch always appear in pair.
-        % so we calculate them together
-        % Because we need the 7/16 point, we can only calculate the notch
-        % and peak of the last pulse cycle.
-        % We NEGLECT the situation in which one or more peak are not be 
-        % detected. In those situation, we cannot compute the 7/16 point's
-        % position
-        if i<num            
-            % Variable Initialize
-            findNotchThed=100;
-            marker=0;
-            % STEP I 1-/2- derivation
-            tmp = data(peak(i,1):peak(i+1,1));
-            dx1 = (diff(tmp));
-            dx2 = nPointsAverage((diff(tmp,2)),7);
-            % STEP II 1- /2- derivation's 0-points
-            tmp=dx1(1:end-1).*dx1(2:end);
-            position=tmp<=0;
-            positions=find(position);
-            
-            tmp=dx2(1:end-1).*dx2(2:end);
-            position1=tmp<=0;
-            positions1=find(position1);
-            % SETP III A simple filter for the 2- derivation' 0-points
-            % sequence
-            tmp=positions1;
-            ts = 60;
-            for j=2:length(positions1)-1
-                if (positions1(j)-positions1(j-1)<=ts)||(positions1(j+1)-positions1(j)<=ts)
-                    tmp(j)=-1;
-                end
-            end
-            positions1save = positions1;
-            positions1=positions1(tmp~=-1);
-            % STEP IV 7/16 point
-            posEstimate=(peak(i+1,1)-peak(i,1))*7/16;
-            % STEP V notch and peak detection
-            tmp=positions1 - posEstimate;
-            [~,pos]=max(tmp(tmp<0)); 
-            
-             if (dx2(positions1(pos)+1)>= dx2(positions1(pos))) && (pos>1)
-                [~,tmp]=min(dx2(positions1(pos-1):positions1(pos)));
-                if isempty(find(dx1(positions1(pos-1):positions1(pos))>0,1))
-                    tmp=positions1(pos-1)+tmp-1;
-                else                    
-                    pos=tmp + positions1(pos-1) - 1;
-                    '1'
-                    marker=1;
-                end
-             elseif (dx2(positions1(pos)+1)< dx2(positions1(pos))) && (pos<length(positions1))
-                 [~,tmp]=min(dx2(positions1(pos):positions1(pos+1)));
-                 if isempty(find(dx1(positions1(pos):positions1(pos+1))>0,1))
-                     tmp=positions1(pos)+tmp-1;
-                 else
-                    pos=tmp + positions1(pos) - 1;
-                    '2'
-                    marker=1;                   
-                 end      
-             else
-                 '3'
-                 marker=1;
-             end
-             
-             if marker == 0
-                 dicPeak(i,:)=[peak(i,1)+tmp data(peak(i,1)+tmp)];
-                    
-                % METHOD I            
-                tmpsave=tmp;
-                tmp=positions1save-tmp;
-                [~,pos]=max(tmp(tmp<0));
-                dicNotch(i,:)=[peak(i,1)+positions1save(pos),...
-                    data(peak(i,1)+positions1save(pos))];
-                tmp=tmpsave;
-
-                % METHOD II
-                 x=(tmp - findNotchThed:tmp);
-                [~, pos] = poinToLineDistance([x(:)'; data(x(:))']',...
-                [x(1),data(x(1))],[x(end),data(x(end))]);
-                pos = tmp + pos - 1 - findNotchThed;
-
-                % METHOD III
-                if dicNotch(i,1)>pos+peak(i,1)
-                    x=(pos+peak(i,1):dicNotch(i,1));
-                    [~, tmp] = poinToLineDistance([x(:)'; data(x(:))']',...
-                         [x(1),data(x(1))],[x(end),data(x(end))]);
-                     pos=peak(i,1) + pos+tmp+6;
-                     dicNotch(i,:)=[pos,data(pos)];
-                else           
-                    '4'
-                    marker=1;
-                end          
-             end
-             
-             if marker==1
-                 [~,pos]=min(abs(positions-pos));
-                 if ~(positions(pos)>posEstimate || positions(pos)<=peak(i,1))                     
-                    dicPeak(i,:)=[peak(i,1)+positions(pos)...
-                        data(peak(i,1)+positions(pos))];
-                    
-                    posave=pos;
-                    tmp=positions1save-positions(pos);
-                    [~,pos]=max(tmp(tmp<0));
-                    dicNotch(i,:)=[peak(i,1)+positions1save(pos),...
-                        data(peak(i,1)+positions1save(pos))];
-                    pos=posave;
-
-                    tmp=positions(pos);
-                    x=(tmp - findNotchThed:tmp);                    
-                    [~, tmp] = poinToLineDistance([x(:)'; data(x(:))']',...
-                         [x(1),data(x(1))],[x(end),data(x(end))]);
-                    pos = peak(i,1) + tmp + pos -1 - findNotchThed;
-                    
-                    if dicNotch(i,1)>pos
-                        x=(pos:dicNotch(i,1));
-                        [~, tmp] = poinToLineDistance([x(:)'; data(x(:))']',...
-                             [x(1),data(x(1))],[x(end),data(x(end))]);
-                         pos=pos+tmp+6;
-                         dicNotch(i,:)=[pos,data(pos)];
-                    end
-                 end
-             end
-        end
+        % 由于重博波和降中峡一定同时出现，因此在此时同时重新检测降中峡与重博波
+        shift = floor(startScale*waveLen);
+        data4dn=[1:length(data4dn);(data4dn(:))']';
+        dicPeak(i,:) = findSPoint(data4dn,1);
+        dicPeak(i,1) = dicPeak(i,1) + shift;
+        dicNotch(i,:) = findSPoint(data4dn,0);
+        dicNotch(i,1) = dicNotch(i,1) + shift;
     end
+
     
 end
 
