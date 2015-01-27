@@ -5,10 +5,10 @@ needPlot = 1;
 %% 选取数据所在文件夹
 %[filePath] =
 %uigetdir('D:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\',... % for syl
-[filePath] = uigetdir('D:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\', ... % for hr
+[filePath] = uigetdir('Y:\code\young\syl',...%'D:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\', 
     '请选择数据所在的文件夹：请确保该文件夹下存在名为“data”和“result”的文件夹！');
-filePathForDate = [filePath, '\data'];
-filePathForSave = [filePath, '\result'];
+filePathForDate = [filePath, '/data'];
+filePathForSave = [filePath, '/result'];
 formulas = {'MK-MODEL', 'POWER', 'LINEAR', 'QUADRIC'};
 
 %% 处理运动前的信号

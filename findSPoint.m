@@ -27,13 +27,18 @@ for i=ds(end)+1:tmp+ds(end)
         end
         tmpArray(j) = relation * distance;
     end
-    if ~(~isempty(double(tmpArray>0))&&~isempty(double(tmpArray>0))...
-            &&((isempty(double(tmpArray>0))&&marker == 1)||(isempty(double(tmpArray>0))&&marker == 0)))
+    if (isempty(double(tmpArray>0))||isempty(double(tmpArray<0))...
+            &&((isempty(double(tmpArray>0))&&marker == 0)||(isempty(double(tmpArray<0))&&marker == 1)))
                 dists(i-ds(end)) = mean(abs(tmpArray));
     end
 end
 
-%% 根据Marker确定凸点或凹点的位置
+%% 判断是否存在凸点或凹点
+if isempty(double(dists~=0))
+    return;
+end
+
+%% 根据Marker确定最凸点或最凹点的位置
 if marker == 1 || marker==0
     [~,pos]=max(dists);
     if marker == 1
