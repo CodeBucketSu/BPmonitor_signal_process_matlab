@@ -12,6 +12,7 @@ else
 end
 len = length(features);
 correlations = zeros(len, 1);
+[row, col] = getSubplotsSize(len);
 for i = 1 : len
     %% 准备工作
     feature = features{i};
@@ -31,7 +32,7 @@ for i = 1 : len
     
     %% 步骤3：画图
     if needPlot
-        subplot(3, 4, i), 
+        subplot(row, col, i), 
         plot(featureNormal(:, 1), featureNormal(:, 2), 'b'); hold on,
         plot(featureNormal(:, 1), featureNormal(:, 2), 'b*'); hold on,
         plot(hrNomal(:, 1), hrNomal(:, 2), 'r');

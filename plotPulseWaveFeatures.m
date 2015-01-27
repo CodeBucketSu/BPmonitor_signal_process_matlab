@@ -5,8 +5,9 @@ fig = figure('Name', [titleOfSignals, ' - features of pulse wave'], ...
     'OuterPos', get(0, 'ScreenSize'));
 
 len = length(features);
+[row, col] = getSubplotsSize(len);
 for i = 1 : len
-    subplot(5, 6, i);
+    subplot(row, col, i);
     feature = features{i};
     if ~ isempty(feature)
         plot(feature(:, 1), feature(:, 2));
