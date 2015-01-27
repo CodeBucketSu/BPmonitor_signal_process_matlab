@@ -42,6 +42,7 @@ function [distances,maxpos,pointAndLineRelation] = poinToLineDistance(points,poi
         elseif d(1,2)==0
             pointAndLineRelation = 0;
         else
-            pointAndLineRelation = 1;
+            pointAndLineRelation = -1;
         end
     end
+    
