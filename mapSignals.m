@@ -1,10 +1,10 @@
 function [dataMapStart, dataMapEnd] = mapSignals(dataStart, dataEnd)
-%MAPSIGNALS(dataStart, dataEnd, index) 从两路数据中将所有对应点保留下来，
+%MAPSIGNALS(dataStart, dataEnd) 从两路数据中将所有对应点保留下来，
 % 从一个信号去除那些在另一个信号中找不到对应点的点。
 % dataStart, dataEnd： 都是 lenth * N 的数据，其中第1列表示点的位置
 % index: 用于指明哪一列将用于对应点的判断
 
-maxInter = max(dataEnd(2 : end) - dataEnd(1 : end - 1));
+maxInter = median(dataEnd(2 : end, 1) - dataEnd(1 : end - 1, 1));
 
 j = 1;
 lenEnd = size(dataEnd, 1);

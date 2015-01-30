@@ -40,7 +40,7 @@ if ifplot || isTrue
     subplot(313), drawPWTTs({pwtPeak, pwtValley, pwtKey, pwtRise}, ...
         {'pwtPeak', 'pwtValley', 'pwtKey', 'pwtRise'});
 else
-    fig = 0;
+    fig = [];
 end
 
 %% 步骤7：去除异常点

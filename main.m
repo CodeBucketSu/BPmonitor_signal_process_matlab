@@ -1,11 +1,10 @@
 clc, clear, close all
-needPlot = 1;
+needPlot = 0;
 
 
 %% 选取数据所在文件夹
-%[filePath] =
-%uigetdir('D:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\',... % for syl
-[filePath] = uigetdir('Y:\code\young\syl',...%'D:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\', 
+%[filePath] = uigetdir(['Y:\code\young\syl',...
+[filePath] = uigetdir('D:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\',... % for syl
     '请选择数据所在的文件夹：请确保该文件夹下存在名为“data”和“result”的文件夹！');
 filePathForDate = [filePath, '/data'];
 filePathForSave = [filePath, '/result'];
@@ -43,18 +42,18 @@ saveFigures(figures, filePathForSave, ...
 % saveFigure(figCorr, filePathForSave, '喝水：PWTT与BP的相关性');
 
 %% 标定并验证
-fig = figure('Name', ' 标定数据'); 
-calibrateAndPlot(BPs(3, :), PWTTs(9, :), 'POWER');
-saveas(fig, [filePathForSave, '/标定数据：标定后估计血压'], 'fig');
-set(fig, 'PaperPositionMode', 'auto');
-saveas(fig, [filePathForSave, '/标定数据：标定后估计血压'], 'jpg');
+% fig = figure('Name', ' 标定数据'); 
+% calibrateAndPlot(BPs(3, :), PWTTs(9, :), 'POWER');
+% saveas(fig, [filePathForSave, '/标定数据：标定后估计血压'], 'fig');
+% set(fig, 'PaperPositionMode', 'auto');
+% saveas(fig, [filePathForSave, '/标定数据：标定后估计血压'], 'jpg');
 %% 用静止数据验证
-[MSEs_static, MEs_static, SVEs_static, CORRs_static, figEst] = calibrateAndComputeBPwithFeaturesAndDifferentModel...
-    (BPs(3, :), PWTTs, BPs_static(3, :), PWTTs_static, formulas, PWTTstats_static_static(:, 3), '静止或改变姿态：用PWTT估计血压');
+% [MSEs_static, MEs_static, SVEs_static, CORRs_static, figEst] = calibrateAndComputeBPwithFeaturesAndDifferentModel...
+%     (BPs(3, :), PWTTs, BPs_static(3, :), PWTTs_static, formulas, PWTTstats_static_static(:, 3), '静止或改变姿态：用PWTT估计血压');
 % saveFigure(figCorr, filePathForSave, '静止或改变姿态：标定后估计血压');
 
-[MSEs_static, MEs_static, SVEs_static, CORRs_static, figEst] = calibrateAndComputeBPwithFeaturesAndDifferentModel...
-    (BPs(3, :), PWFs_wrst, BPs_static(3, :), PWFs_wrst_static, formulas, PWFstat_wrst_static(:, 3), '静止或改变姿态：用PWF估计血压');
+% [MSEs_static, MEs_static, SVEs_static, CORRs_static, figEst] = calibrateAndComputeBPwithFeaturesAndDifferentModel...
+%     (BPs(3, :), PWFs_wrst, BPs_static(3, :), PWFs_wrst_static, formulas, PWFstat_wrst_static(:, 3), '静止或改变姿态：用PWF估计血压');
 
 % % 用憋气数据验证
 % [MSEs_bq, MEs_bq, SVEs_bq, CORRs_bq, figEst] = calibrateAndComputeBPwith12PWTTsAndDifferentModel...

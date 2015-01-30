@@ -1,6 +1,6 @@
 function figures = recordFeatureIfNeeded(figs, fig, ifNeeded)
     if ifNeeded
-        figures = [figs; fig];
+        figures = [figs(:); fig];
     else
         figures = figs;
     end
