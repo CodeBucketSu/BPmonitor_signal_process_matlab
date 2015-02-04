@@ -10,6 +10,8 @@ function [dicNotch, dicPeak, zeroPassPointsNum ] = detectDicNotchAndDicPeakInDes
 
 %%参数与输出预定义
 resampleInterval = 10;%减采样周期
+dicNotch = -1;
+dicPeak = -1;
 %% 步骤1：信号段减采样与归一化 
 data = descendingEdge;
 dataPart = downsample(data,resampleInterval);
@@ -20,6 +22,9 @@ wlp = waveletMethodB(dataPart);
 %   求小波变换的第4个过零点并增采样，作为降中峡位置
 pos = findPassZeroPointPos(wlp(1:floor(end/2))) ;    
 zeroPassPointsNum = length(pos);
+if zeroPassPointsNum<4
+	return
+end
 pos =  pos(4) * resampleInterval ;
 %   将降中峡位置增采样，并在[-resampleInterval,resampleInterval]内寻找二阶导最大值点，作为降中峡原始波形位置
 if pos + resampleInterval<=length(data) && pos - resampleInterval>0
