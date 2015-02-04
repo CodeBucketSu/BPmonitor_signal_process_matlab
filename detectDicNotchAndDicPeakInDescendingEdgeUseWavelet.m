@@ -19,21 +19,27 @@ dataPart = dataPart/max(abs(dataPart));
 %% 步骤2：求小波变换
 wlp = waveletMethodB(dataPart);
 %% 步骤3：降中峡位置
-%   求小波变换的第4个过零点并增采样，作为降中峡位置
+%   3-1 求小波变换的第4个过零点并增采样，作为降中峡位置
 pos = findPassZeroPointPos(wlp(1:floor(end/2))) ;    
 zeroPassPointsNum = length(pos);
 if zeroPassPointsNum<4
 	return
 end
 pos =  pos(4) * resampleInterval ;
-%   将降中峡位置增采样，并在[-resampleInterval,resampleInterval]内寻找二阶导最大值点，作为降中峡原始波形位置
+%   4-2 将降中峡位置增采样，并在[-resampleInterval,resampleInterval]内寻找二阶导最大值点，作为降中峡原始波形位置
 if pos + resampleInterval<=length(data) && pos - resampleInterval>0
         [~,shift] = max(abs(diff(data(pos- resampleInterval:pos + resampleInterval),2)));
         pos = pos + shift - resampleInterval; 
 end
+if pos >= length(data)
+    return
+end
 dicNotch = pos;
 %% 步骤4：在[pos+1:pos+range-1]范围内寻找到包含[pos,data(pos)]与[pos+range,data(pos+range)]这两点的直线
 %       的距离最近且处于直线上方的点，然后在起点到这点之间找波峰。如果找到了波峰，则将其位置作为重博波位置，否则使用终点位置
+if pos+range > length(data)
+    range = length(data) - pos;
+end
 tmp = data(pos+1:pos+range-1);
 [~,maxpos,~] = poinToLineDistance([pos+1:pos+range-1;tmp(:)']',...
     [pos,data(pos)],[pos+range,data(pos+range)],1);

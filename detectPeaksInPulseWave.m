@@ -2,7 +2,7 @@ function [peaks,onsets,percent10s, percent50s, dicNotches, dicPeaks] = detectPea
 % detectPeaksInPulseWave ¼ì²âÂö²«²¨µÄ²¨·å¡¢²¨¹È¡¢10%¹Ø¼üµã
 
 %% ²½Öè1£º¼ì²âÂö²«²¨·å
-peaks = detetectPeaksInPulseWave(data, 60);  %
+peaks = detetectPeaksInPulseWave(data, 60);  
 
 %% ²½Öè2£º¼ì²âÂö²«²¨Æðµã£¬²¢Óëpeaks¶ÔÆë
 onsets = detectOnsetsInPulseWave(data, peaks);
@@ -17,7 +17,6 @@ percent50s = alignDataAccordingToReferenceData(percent50s, peaks, -200, -10);
 [dicNotches, dicPeaks] = detectCharacteristicPointsInDescendingLimbOfPulseWave(data, onsets, peaks,'WAVELET');%,'WAVELET' 
 dicNotches = alignDataAccordingToReferenceData(dicNotches, peaks, 50, 500);
 dicPeaks = alignDataAccordingToReferenceData(dicPeaks, peaks, 50, 600);
-
 
 % figure, hold on;
 % plot(data, 'k');
