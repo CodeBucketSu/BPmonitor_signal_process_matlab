@@ -14,7 +14,7 @@ percent10s = alignDataAccordingToReferenceData(percent10s, peaks, -300, -10);
 percent50s = alignDataAccordingToReferenceData(percent50s, peaks, -200, -10);
 
 %% 步骤4：在每个心动周期的下降沿定位特征点：降中峡，重博波 ，并与peaks对齐
-[dicNotches, dicPeaks] = detectCharacteristicPointsInDescendingLimbOfPulseWave(data, onsets, peaks);
+[dicNotches, dicPeaks] = detectCharacteristicPointsInDescendingLimbOfPulseWave(data, onsets, peaks);%,'WAVELET' 
 dicNotches = alignDataAccordingToReferenceData(dicNotches, peaks, 50, 500);
 dicPeaks = alignDataAccordingToReferenceData(dicPeaks, peaks, 50, 600);
 
