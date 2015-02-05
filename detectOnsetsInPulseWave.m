@@ -30,18 +30,22 @@ for i = 1 : size(peaks, 1)
     %% 步骤3：定位波谷点，满足：
     %       1，在idxStart和idxEnd两点之间
     %       2，距离idxStart和idxEnd两点连线距离最远
-    delta = (data(idxEnd) - data(idxStart)) / (idxEnd - idxStart);
     if idxEnd - idxStart  < 2
         vIdx = ceil((idxEnd + idxStart) / 2);
         onsets(i, :) = [vIdx, data(vIdx)];
     else
-        for idx = idxEnd - 1 : -1 : idxStart + 1
-            if data(idx) - data(idx - 1) < delta && data(idx + 1) - data(idx) > delta
-                vIdx = idx;
-                onsets(i, :) = [vIdx, data(vIdx)];
-                break;
-            end
-        end
+        [~,vIdx] = poinToLineDistance([idxStart:idxEnd; data(idxStart:idxEnd).'].',...
+            [idxStart, data(idxStart)],[idxEnd, data(idxEnd)],0);
+        vIdx = idxStart + vIdx - 1;
+        onsets(i, :) = [vIdx, data(vIdx)];
+%         delta = (data(idxEnd) - data(idxStart)) / (idxEnd - idxStart);
+%         for idx = idxEnd - 1 : -1 : idxStart + 1
+%             if data(idx) - data(idx - 1) < delta && data(idx + 1) - data(idx) > delta
+%                 vIdx = idx;
+%                 onsets(i, :) = [vIdx, data(vIdx)];
+%                 break;
+%             end
+%         end
     end
 end
 

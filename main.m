@@ -11,19 +11,19 @@ filePathForSave = [filePath, '/result'];
 formulas = {'MK-MODEL', 'POWER', 'LINEAR', 'QUADRIC'};
 
 %% 处理运动前的信号
-fileNames = {'pf.mat'};  %'sj.mat', 'xc.mat','pf.mat', 'ydh.mat'
+fileNames = {'pf.mat' };  %'sj.mat', 'xc.mat','pf.mat', 'ydh.mat'
 [HRs, BPs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames, PWTTstats, PWFstats_elb, PWFstat_wrst, corrBpHr, figures]...
     = computeAll(filePathForDate, fileNames, needPlot, '标定数据');
 saveFigures(figures, filePathForSave, ...
     {'标定数据：PWTT与BP的相关性'; '标定数据：PWF_elbw与BP的相关性';  '标定数据：PWF_wrst与BP的相关性'});
 
 %% 处理静止（改变姿态）测试集信号
-fileNames = {'static.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hs.mat', 'hs.mat'
-[HRs_static, BPs_static, PWTTs_static, PWFs_elb_static, PWFs_wrst_static, PWFnames_static, ...
-    PWTTstats_static_static, PWFstats_elb_static, PWFstat_wrst_static, corrBpHr_static, figures]...
-    = computeAll(filePathForDate, fileNames, needPlot, '静止或改变姿态');
-saveFigures(figures, filePathForSave, ...
-    {'静止或改变姿态：PWTT与BP的相关性'; '静止或改变姿态：PWF_elbw与BP的相关性';  '静止或改变姿态：PWF_wrst与BP的相关性'});
+% fileNames = {'static.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hs.mat', 'hs.mat'
+% [HRs_static, BPs_static, PWTTs_static, PWFs_elb_static, PWFs_wrst_static, PWFnames_static, ...
+%     PWTTstats_static_static, PWFstats_elb_static, PWFstat_wrst_static, corrBpHr_static, figures]...
+%     = computeAll(filePathForDate, fileNames, needPlot, '静止或改变姿态');
+% saveFigures(figures, filePathForSave, ...
+%     {'静止或改变姿态：PWTT与BP的相关性'; '静止或改变姿态：PWF_elbw与BP的相关性';  '静止或改变姿态：PWF_wrst与BP的相关性'});
 
 % %% 处理憋气测试集信号
 % fileNames = {'bq.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hx.mat', 'hs.mat'

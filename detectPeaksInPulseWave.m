@@ -5,8 +5,12 @@ function [peaks,onsets,percent10s, percent50s, dicNotches, dicPeaks] = detectPea
 peaks = detetectPeaksInPulseWave(data, 60);  
 
 %% 步骤2：检测脉搏波起点，并与peaks对齐
-onsets = detectOnsetsInPulseWave(data, peaks);
-onsets = alignDataAccordingToReferenceData(onsets, peaks, -300, -10);
+onsets_tmp = detectOnsetsInPulseWave(data, peaks);
+onsets = alignDataAccordingToReferenceData(onsets_tmp, peaks, -300, -10);
+error = find(onsets(:, 1) == -1);
+if length(error) > 0
+    input('error');
+end
 
 %% 步骤3：在每个心动周期的上升沿定位特征点：10%关键点,斜率最大点，并与peaks对齐
 [percent10s, percent50s] = detectCharacteristicPointsInAscendingEdgeOfPulseWave(data, onsets, peaks);

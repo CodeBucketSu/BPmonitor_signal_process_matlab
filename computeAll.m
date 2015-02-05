@@ -134,19 +134,19 @@ figures = recordFeatureIfNeeded(figures, figCorr, 1);
 BPs = [MBPs; SBPs; DBPs];
 % 封装PWTT统计值
 PWTTstats = zeros(12, 3);
-PWTTstats(:, 1) = corrPwttBp;
-PWTTstats(:, 2) = corrPwttHr;
-PWTTstats(:, 3) = mean(corrPwttHrs, 2);
+PWTTstats(:, 1:2) = corrPwttBp;
+PWTTstats(:, 3:4) = corrPwttHr;
+PWTTstats(:, 5) = mean(corrPwttHrs, 2);
 % 封装手肘PWF统计值
 PWFstats_elb = zeros(length(corrPwfBp_elbw), 3);
-PWFstats_elb(:, 1) = corrPwfBp_elbw;
-PWFstats_elb(:, 2) = corrPwfHr_elbw; 
-PWFstats_elb(:, 3) = mean(corrFtrHrs_elbw, 2); 
+PWFstats_elb(:, 1:2) = corrPwfBp_elbw;
+PWFstats_elb(:, 3:4) = corrPwfHr_elbw; 
+PWFstats_elb(:, 5) = mean(corrFtrHrs_elbw, 2); 
 % 封装手腕PWF统计值
 PWFstat_wrst = zeros(length(corrPwfBp_wrst), 3);
-PWFstat_wrst(:, 1) = corrPwfBp_wrst;
-PWFstat_wrst(:, 2) = corrPwfHr_wrst; 
-PWFstat_wrst(:, 3) = mean(corrFtrHrs_wrst, 2); 
+PWFstat_wrst(:, 1:2) = corrPwfBp_wrst;
+PWFstat_wrst(:, 3:4) = corrPwfHr_wrst; 
+PWFstat_wrst(:, 5) = mean(corrFtrHrs_wrst, 2); 
 
 end
 
