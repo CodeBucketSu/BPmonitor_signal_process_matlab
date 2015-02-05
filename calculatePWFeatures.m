@@ -30,12 +30,13 @@ function [features,featureNames] = calculatePWFeatures(pw,peaks,valleys,dicNotch
 %     DfAmBE DfAmBE
 %     G	G
 %     LeBA	LeBA
-%     TmCpt	TmCpt
+%     TmCpt	TmCpt 改为降中峡后1/8心动周期内取值大于降中峡的点数
+%     TmCptR TmCpt占整段心动周期的比例
 
-%% 初始化32个特征名
+%% 初始化33个特征名
 featureNames = {'PH','PRT','DNH','DNHr','DPH','DPHr','PWA','RAr','DscAr','DiaAr',...
 'K1','K2','K3','SW10','SW25','SW33','SW50','SW66','SW75','DW10','DW25','DW33','DW50','DW66','DW75',...
-'DPT','KVAL','AmBE','DfAmBE','G','LeBA','TmCpt'...
+'DPT','KVAL','AmBE','DfAmBE','G','LeBA','TmCpt','TmCptR'...
 };
 features = featureNames;
 %后4个输入的长度必须都为N - 否则出错
@@ -49,6 +50,8 @@ pPeaks=peaks(:,1)>0;
 pValleys=valleys(:,1)>0;
 %存储同时检出峰谷值波形的位置
 pBoth=pPeaks&pValleys;
+
+%首先计算谷-谷值阈值.如果有一个谷值没检出,用相应的峰-峰值代替.如果有一个峰值没检出,用相应的谷-峰值或峰-谷值代替
 
 %降中峽/重博波预处理
 dicNotchs = dicNotchs(1:N,:);
@@ -117,35 +120,35 @@ else
     features{5}=[];
     features{6}=[];
     
-    features{9}=[];
-    features{10}=[];
+%     features{9}=[];
+%     features{10}=[];
     
     features{13}=[];
     
     features{26}=[];
     
-    features{30}=[];
-    features{31}=[];
-    features{32}=[];
+%     features{30}=[];
+%     features{31}=[];
+%     features{32}=[];
 end
 
 
 %% 
 j=1;
-features{7} = peaks(1:N-1,:);
+features{7} = peaks(1:N-1,:)*[1,0;0,0];
+features{7}(:,2)=features{7}(:,2)+NaN;
 features{8} = features{7};
-features{27} = features{7};
-features{9} = peaks(indexesEndWith0,:);
+features{9} = peaks(indexesEndWith0,:)*[1,0;0,0];
+features{9}(:,2)=features{9}(:,2)+NaN;
 features{10} = features{9};
-features{30} = features{9};
-features{31} = features{9};
-features{32} = features{9};
-
-for i=14:25
-    features{i} = peaks(1:N-1,:);
+for i=30:33
+    features{i} = features{9};
 end
-for i=28:29   
-    features{i} = peaks(1:N-1,:);
+for i=14:25
+    features{i} = features{7};
+end
+for i=27:29   
+    features{i} = features{7};
 end
 % save the sum of each pulse wave
 tmp3 = zeros(N-1,1);
@@ -179,9 +182,12 @@ for i=1:N-1
            tmp = tmp(:)  - pw(peaks(i,1):valleys(i+1,1));
            features{31}(j,2) = sqrt(tmp(:)'*tmp(:)/length(tmp));
        end
-       % 计算TmCpt
-       tmp = pw(dicNotchs(i,1):dicNotchs(i,1)+160) - pw(dicNotchs(i,1));
-       features{32}(j,2) = sum(tmp>0);
+       % 计算TmCpt 与 TmpctR - 只有在两相邻谷值都存在时才会计算
+       if valleys(i,1)>0 && valleys(i+1,1)>0
+           tmp = pw(dicNotchs(i,1):dicNotchs(i,1)+ceil((valleys(i+1,1)-valleys(i,1))/8)) - pw(dicNotchs(i,1));
+           features{32}(j,2) = sum(tmp>0);
+           features{33}(j,2) = features{32}(j,2)/(valleys(i+1,1) - valleys(i,1));
+       end
         j = j+1;
     end
     
@@ -211,14 +217,6 @@ for i=1:N-1
    end
 end
 
-%%筛选计算出的特征值序列
-for i=7:10
-    features{i} = features{i}(features{i}(:,1)>0,:);
-end
-for i=14:31
-    features{i} = features{i}(features{i}(:,1)>0,:);
-end
-
 %% 计算K1
 features{11}=[peaks(pBoth,1) (peaks(pBoth,2) - valleys(pBoth,2))./(peaks(pBoth,1) - valleys(pBoth,1))] ;
 
@@ -234,4 +232,12 @@ pBiValleys=tmp3>0;
 features{27}(:,2)= (tmp3./diff(valleys(:,1))-valleys(1:end-1,2))./features{1}(1:end-1,2);
 features{27} = features{27}(pBoth(1:end-1)&pBiValleys,:);
 
+
+%%筛选计算出的特征值序列
 features{1}=features{1}(pBoth,:);
+for i=7:10
+    features{i} = features{i}((features{i}(:,1)>0)&~isnan(features{i}(:,2)),:);
+end
+for i=14:33
+    features{i} = features{i}((features{i}(:,1)>0)&~isnan(features{i}(:,2)),:);
+end
