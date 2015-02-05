@@ -110,7 +110,7 @@ if calcNotch>0
     end
     
     % 计算降中峡~重搏波传播时间 - 要求同时有降中峡与重搏波
-    features{26} = dicPeaks(indexes,:) - dicNotchs(indexes,:);
+    features{26} = [peaks(indexes) dicPeaks(indexes,1) - dicNotchs(indexes,1)];
 else
     features{3}=[];
     features{4}=[];
