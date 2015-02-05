@@ -8,35 +8,12 @@ function [features,featureNames] = calculatePWFeatures(pw,peaks,valleys,dicNotch
 %   要求四个信号的长度必须相同
 %输出:
 %   features,featureNames:特征/特征名元胞数组 K*2 [峰值位置,特征值]
-%各种逐拍特征名及其含义
-%     PEAK-HEiGHT	主波高度 -> 有峰有谷
-%     PEAK-RiSE-TiME	主波上升时间（流出时间）-> 有峰有谷
-%     DiCNOTCH-HEiGHT	降中峽高度 -> 有降中峡
-%     DiCNOTCH-RELATiVE-HEiGHT	降中峽相对高度 
-%     DiCPEAK-HEiGHT	重博波高度
-%     DiCPEAK-RELATiVE-HEiGHT	重博波相对高度（反射系数）
-%     PULSE-WAVE-AREA	脉搏波面积
-%     RiSE-RELATiVE-AREA	升支相对面积
-%     DiCEND-RELATiVE-AREA	B-C相对面积
-%     DiASTOLiC-RELATiVE-AREA	舒张期相对面积
-%     K1	A-B斜率
-%     K2	B-A’斜率
-%     K3	D-A’斜率
-%     SW10、SW25…	SWk
-%     DW10、DW25…	DWk
-%     DiCNOTCH-PEAK-TiME   脉搏波波谷到波峰的传播时间
-%     KVAL K值
-%     AmBE	AmBE
-%     DfAmBE DfAmBE
-%     G	G
-%     LeBA	LeBA
-%     TmCpt	TmCpt 改为降中峡到下一个心动周期起始点这段时间内取值大于降中峡的点数
-%     TmCptR TmCpt占整段心动周期的比例
+%各种逐拍特征名及其含义见文档
 
 %% 初始化33个特征名
-featureNames = {'PH','PRT','DNH','DNHr','DPH','DPHr','PWA','RAr','DscAr','DiaAr',...
-'K1','K2','K3','SW10','SW25','SW33','SW50','SW66','SW75','DW10','DW25','DW33','DW50','DW66','DW75',...
-'DPT','KVAL','AmBE','DfAmBE','G','LeBA','TmCpt','TmCptR'...
+featureNames = {'PH','PRT','DNH','DNHr','DPH','DPHr','PWA','RAr','DicAr','DiaAr',...
+'SLP1','SLP2','SLP3','SW10','SW25','SW33','SW50','SW66','SW75','DW10','DW25','DW33','DW50','DW66','DW75',...
+'DPT','KVAL','AmBE','DfAmBE','DNC','SC','DPW','DPWr'...
 };
 features = featureNames;
 %后4个输入的长度必须都为N - 否则出错
