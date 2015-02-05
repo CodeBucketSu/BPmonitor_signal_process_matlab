@@ -30,7 +30,7 @@ function [features,featureNames] = calculatePWFeatures(pw,peaks,valleys,dicNotch
 %     DfAmBE DfAmBE
 %     G	G
 %     LeBA	LeBA
-%     TmCpt	TmCpt 改为降中峡后1/8心动周期内取值大于降中峡的点数
+%     TmCpt	TmCpt 改为降中峡到下一个心动周期起始点这段时间内取值大于降中峡的点数
 %     TmCptR TmCpt占整段心动周期的比例
 
 %% 初始化33个特征名
@@ -50,8 +50,10 @@ pPeaks=peaks(:,1)>0;
 pValleys=valleys(:,1)>0;
 %存储同时检出峰谷值波形的位置
 pBoth=pPeaks&pValleys;
-
-%首先计算谷-谷值阈值.如果有一个谷值没检出,用相应的峰-峰值代替.如果有一个峰值没检出,用相应的谷-峰值或峰-谷值代替
+%首先计算谷-谷值阈值
+valley2valleyDists=valleys(pValleys,1);
+valley2valleyDists=valley2valleyDists(2:end) - valley2valleyDists(1:end-1);
+threshold=median(valley2valleyDists)*1.5;
 
 %降中峽/重博波预处理
 dicNotchs = dicNotchs(1:N,:);
@@ -155,7 +157,7 @@ tmp3 = zeros(N-1,1);
 
 for i=1:N-1
    % The Sum
-   if valleys(i,1)>0 && valleys(i+1,1)>0
+   if valleys(i,1)>0 && valleys(i+1,1)>0 &&(valleys(i+1,1) - valleys(i,1)<=threshold)
        tmp3(i) = sum(pw(valleys(i,1):valleys(i+1,1)));
        % 计算脉搏波面积 - 两个相邻的波谷均被检出
        features{7}(i,2) = calcArea(pw(valleys(i,1):valleys(i+1,1)) - minPW);
@@ -172,7 +174,7 @@ for i=1:N-1
    end
     
     if dicNotchs(i,1) > 0         
-       if valleys(i+1,1)>0 && peaks(i,1)>0
+       if valleys(i,1)>0 &&valleys(i+1,1)>0 && peaks(i,1)>0&&(valleys(i+1,1) - valleys(i,1)<=threshold)
            % 计算G
             features{30}(j,2) = (valleys(i+1,1) - dicNotchs(i,1))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1))...
                 - pw(dicNotchs(i,1));
@@ -182,9 +184,9 @@ for i=1:N-1
            tmp = tmp(:)  - pw(peaks(i,1):valleys(i+1,1));
            features{31}(j,2) = sqrt(tmp(:)'*tmp(:)/length(tmp));
        end
-       % 计算TmCpt 与 TmpctR - 只有在两相邻谷值都存在时才会计算
-       if valleys(i,1)>0 && valleys(i+1,1)>0
-           tmp = pw(dicNotchs(i,1):dicNotchs(i,1)+ceil((valleys(i+1,1)-valleys(i,1))/8)) - pw(dicNotchs(i,1));
+       % 计算TmCpt 与 TmpctR - 只有在两相邻谷值都存在且中间没有漏检的波形时才会计算
+       if valleys(i,1)>0 && valleys(i+1,1)>0&&(valleys(i+1,1) - valleys(i,1)<=threshold)
+           tmp = pw(dicNotchs(i,1):valleys(i+1,1)) - pw(dicNotchs(i,1));
            features{32}(j,2) = sum(tmp>0);
            features{33}(j,2) = features{32}(j,2)/(valleys(i+1,1) - valleys(i,1));
        end
@@ -200,7 +202,7 @@ for i=1:N-1
         features{18}(i,2) =peaks(i,1) - valleys(i,1)-detectKpercentKeyPoint(pw(valleys(i,1):peaks(i,1)),0.66);
         features{19}(i,2) =peaks(i,1) - valleys(i,1)-detectKpercentKeyPoint(pw(valleys(i,1):peaks(i,1)),0.75);    
     end
-    if valleys(i+1,1)>0 && peaks(i,1)>0
+    if valleys(i,1)>0 && valleys(i+1,1)>0 && peaks(i,1)>0&&(valleys(i+1,1) - valleys(i,1)<=threshold)
        features{20}(i,2) = valleys(i+1,1) - peaks(i,1) - detectKpercentKeyPoint(pw(peaks(i,1):valleys(i+1,1)),0.1);   
        features{21}(i,2) =valleys(i+1,1) - peaks(i,1) - detectKpercentKeyPoint(pw(peaks(i,1):valleys(i+1,1)),0.25);
        features{22}(i,2) =valleys(i+1,1) - peaks(i,1) - detectKpercentKeyPoint(pw(peaks(i,1):valleys(i+1,1)),0.33);
