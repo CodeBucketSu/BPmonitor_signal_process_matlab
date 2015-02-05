@@ -25,17 +25,17 @@ function [features,featureNames] = calculatePWFeatures(pw,peaks,valleys,dicNotch
 %     SW10、SW25…	SWk
 %     DW10、DW25…	DWk
 %     DiCNOTCH-PEAK-TiME   脉搏波波谷到波峰的传播时间
+%     KVAL K值
 %     AmBE	AmBE
 %     DfAmBE DfAmBE
 %     G	G
 %     LeBA	LeBA
 %     TmCpt	TmCpt
-%     KVAL K值
 
 %% 初始化32个特征名
 featureNames = {'PH','PRT','DNH','DNHr','DPH','DPHr','PWA','RAr','DscAr','DiaAr',...
 'K1','K2','K3','SW10','SW25','SW33','SW50','SW66','SW75','DW10','DW25','DW33','DW50','DW66','DW75',...
-'DPT','AmBE','DfAmBE','G','LeBA','TmCpt','KVAL'...
+'DPT','KVAL','AmBE','DfAmBE','G','LeBA','TmCpt'...
 };
 features = featureNames;
 %后4个输入的长度必须都为N - 否则出错
@@ -124,9 +124,9 @@ else
     
     features{26}=[];
     
-    features{29}=[];
     features{30}=[];
     features{31}=[];
+    features{32}=[];
 end
 
 
@@ -134,17 +134,17 @@ end
 j=1;
 features{7} = peaks(1:N-1,:);
 features{8} = features{7};
-features{32} = features{7};
+features{27} = features{7};
 features{9} = peaks(indexesEndWith0,:);
 features{10} = features{9};
-features{29} = features{9};
 features{30} = features{9};
 features{31} = features{9};
+features{32} = features{9};
 
 for i=14:25
     features{i} = peaks(1:N-1,:);
 end
-for i=27:28    
+for i=28:29   
     features{i} = peaks(1:N-1,:);
 end
 % save the sum of each pulse wave
@@ -171,17 +171,17 @@ for i=1:N-1
     if dicNotchs(i,1) > 0         
        if valleys(i+1,1)>0 && peaks(i,1)>0
            % 计算G
-            features{29}(j,2) = (valleys(i+1,1) - dicNotchs(i,1))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1))...
+            features{30}(j,2) = (valleys(i+1,1) - dicNotchs(i,1))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1))...
                 - pw(dicNotchs(i,1));
             
            % 计算LeBA
            tmp =(valleys(i+1,1) - (peaks(i,1):valleys(i+1,1)))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1));
            tmp = tmp(:)  - pw(peaks(i,1):valleys(i+1,1));
-           features{30}(j,2) = sqrt(tmp(:)'*tmp(:)/length(tmp));
+           features{31}(j,2) = sqrt(tmp(:)'*tmp(:)/length(tmp));
        end
        % 计算TmCpt
        tmp = pw(dicNotchs(i,1):dicNotchs(i,1)+160) - pw(dicNotchs(i,1));
-       features{31}(j,2) = sum(tmp>0);
+       features{32}(j,2) = sum(tmp>0);
         j = j+1;
     end
     
@@ -204,10 +204,10 @@ for i=1:N-1
     end
    if peaks(i)>0
        % 计算AmBE 
-       features{27}(i,2) = mean(pw(peaks(i,1):peaks(i,1)+99) - pw(peaks(i,1)+100));
+       features{28}(i,2) = mean(pw(peaks(i,1):peaks(i,1)+99) - pw(peaks(i,1)+100));
 
        % 计算DfAmBE ??? 可以直接用BE斜率替代吧
-       features{28}(i,2) = mean(pw(peaks(i,1):peaks(i,1)+99) - pw(peaks(i,1)+1:peaks(i,1)+100));
+       features{29}(i,2) = mean(pw(peaks(i,1):peaks(i,1)+99) - pw(peaks(i,1)+1:peaks(i,1)+100));
    end
 end
 
@@ -231,7 +231,7 @@ features{12}=[pbothpeaks((1:end-1),1) (pbothpeaks((1:end-1),2) - pbothvalleys((2
 %% 计算K值
 %连续两个valleys均检到对应的位置
 pBiValleys=tmp3>0;
-features{32}(:,2)= (tmp3./diff(valleys(:,1))-valleys(1:end-1,2))./features{1}(1:end-1,2);
-features{32} = features{32}(pBoth(1:end-1)&pBiValleys,:);
+features{27}(:,2)= (tmp3./diff(valleys(:,1))-valleys(1:end-1,2))./features{1}(1:end-1,2);
+features{27} = features{27}(pBoth(1:end-1)&pBiValleys,:);
 
 features{1}=features{1}(pBoth,:);
