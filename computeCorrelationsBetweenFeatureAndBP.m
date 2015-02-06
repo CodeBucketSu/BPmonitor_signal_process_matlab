@@ -1,4 +1,4 @@
-function [corrBP2Feature, corrFeature2HR, corrBP2HR, fig] = computeCorrelationsBetweenFeatureAndBP(bp, features, featureNames, hr, corrFeatureHrs, titleOfSignals)
+    function [corrBP2Feature, corrFeature2HR, corrBP2HR, fig] = computeCorrelationsBetweenFeatureAndBP(bp, features, featureNames, hr, corrFeatureHrs, titleOfSignals)
 
 bpNomal = (bp - mean(bp)) ./ std(bp);
 hrNomal = (hr - mean(hr)) ./ std(hr);
@@ -16,6 +16,7 @@ corrFeature2HR = zeros(len, 2);
 for i = 1 : len
     %% 准备工作
     feature = features(i, :);
+    feature = feature(~isnan(feature));
     name = featureNames{i};
     
     %% 步骤1：去基线，归一化

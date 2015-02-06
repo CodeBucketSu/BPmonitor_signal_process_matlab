@@ -31,7 +31,7 @@ for i = 1 : size(onsets, 1)
         % 衰减法计算新的range序列 - 规定range的每个值必须大于100
         range = seqShifter(range,dpIdx - dnIdx + 100,i);
     else
-        [dnIdx, dpIdx] = detectDicNotchAndDicPeakInDescendingEdge(descendingEdge, 'PEAK');%'DISTANCE'); %
+        [dnIdx, dpIdx] = detectDicNotchAndDicPeakInDescendingEdge(descendingEdge, method);%'DISTANCE'); %
     end
     % 判断是否检出正确的重搏波与降中峡
     if dnIdx~=-1 && dpIdx~=-1
