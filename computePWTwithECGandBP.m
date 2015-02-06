@@ -29,7 +29,7 @@ isTrue = isTrue || isTooManyPeaksRemoved({bp_valley, bp_peak}, {bp_valley_used1,
 hasError = isTrue;
 
 %% 步骤6：根据需要画图
-if ifplot || isTrue
+if ifplot || hasError
     fig = figure('Name', titleOfSignals);
     subplot(311), drawSignalPeaksAndPeaksUsed(ecg, {ecg_peak}, {ecg_peak_used}, 'r');
     subplot(312), drawSignalPeaksAndPeaksUsed(bp, {bp_peak, bp_valley, bp_key}, ...
