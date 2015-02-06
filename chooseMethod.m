@@ -10,8 +10,7 @@ points = zeros(3, 1);
 
 for i = 1 : length(IDXS2CMP)
     idx = IDXS2CMP(i);
-    points = points + compareFeatureCorr({pwfstats{1}(idx, :), ...
-         pwfstats{2}(idx, :), pwfstats{3}(idx, :)});
+    points = points + compareFeatureCorr({pwfstats{1}(idx, :),pwfstats{2}(idx, :), pwfstats{3}(idx, :)});
 end
 
 methodNum = find(points == max(points(:)), 1, 'first');

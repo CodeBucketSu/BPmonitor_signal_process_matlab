@@ -8,7 +8,9 @@ function [ pwttcorr,pwfcorrelb,pwfcorrwrt ] = mainFunc( method,dataType,path )
 %%预定义
 needPlot = 0;
 save('method.mat','method');
-
+pwttcorr = [];
+pwfcorrelb = [];
+pwfcorrwrt = [];
 if strcmp(dataType,'CALIBRITION')
     candidates = {'pf','xc','sj'};
     fileNameforSave = '/result_cali.mat';
@@ -26,11 +28,19 @@ filePathForSave = [path, '/result'];
 
 %% 处理信号
 fileNames = getFileNamesforBatch(candidates,filePathForData); 
+if isempty(fileNames)
+    return
+end
 [HRs, BPs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames, PWTTstats, PWFstats_elb, PWFstat_wrst, corrBpHr, figures]...
     = computeAll(filePathForData, fileNames, needPlot, '标定数据');
 saveFigures(figures, filePathForSave, ...
     {'标定数据：PWTT与BP的相关性'; '标定数据：PWF_elbw与BP的相关性';  '标定数据：PWF_wrst与BP的相关性'});
 
 save([filePathForSave, fileNameforSave]);
+%%返回
+pwttcorr = PWTTstats;
+pwfcorrelb = PWFstats_elb;
+pwfcorrwrt = PWFstat_wrst;
+
 end
 
