@@ -17,3 +17,6 @@
 
 # Simulink Code Generation
 slprj/
+
+# Microsoft Word temp file extension
+*.tmp
