@@ -4,26 +4,26 @@ needPlot = 0;
 
 %% 选取数据所在文件夹
 %[filePath] = uigetdir(['Y:\code\young\syl',...
-[filePath] = uigetdir('D:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\',... % for syl
+[filePath] = uigetdir('L:\young',... % for syl
     '请选择数据所在的文件夹：请确保该文件夹下存在名为“data”和“result”的文件夹！');
 filePathForDate = [filePath, '/data'];
 filePathForSave = [filePath, '/result'];
 formulas = {'MK-MODEL', 'POWER', 'LINEAR', 'QUADRIC'};
 
 %% 处理运动前的信号
-fileNames = {'pf.mat' };  %'sj.mat', 'xc.mat','pf.mat', 'ydh.mat'
+fileNames = {'pf.mat', 'xc.mat' };  %'sj.mat', 'xc.mat','pf.mat', 'ydh.mat'
 [HRs, BPs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames, PWTTstats, PWFstats_elb, PWFstat_wrst, corrBpHr, figures]...
     = computeAll(filePathForDate, fileNames, needPlot, '标定数据');
 saveFigures(figures, filePathForSave, ...
     {'标定数据：PWTT与BP的相关性'; '标定数据：PWF_elbw与BP的相关性';  '标定数据：PWF_wrst与BP的相关性'});
 
 %% 处理运动后测试集信号
-fileNames = {'ydh.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hs.mat', 'hs.mat'
-[HRs_ydh, BPs_ydh, PWTTs_ydh, PWFs_elb_ydh, PWFs_wrst_ydh, PWFnames_ydh, ...
-    PWTTstats_ydh, PWFstats_elb_ydh, PWFstat_wrst_ydh, corrBpHr_ydh, figures]...
-    = computeAll(filePathForDate, fileNames, needPlot, '静止或改变姿态');
-saveFigures(figures, filePathForSave, ...
-    {'静止或改变姿态：PWTT与BP的相关性'; '静止或改变姿态：PWF_elbw与BP的相关性';  '静止或改变姿态：PWF_wrst与BP的相关性'});
+% fileNames = {'ydh.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hs.mat', 'hs.mat'
+% [HRs_ydh, BPs_ydh, PWTTs_ydh, PWFs_elb_ydh, PWFs_wrst_ydh, PWFnames_ydh, ...
+%     PWTTstats_ydh, PWFstats_elb_ydh, PWFstat_wrst_ydh, corrBpHr_ydh, figures]...
+%     = computeAll(filePathForDate, fileNames, needPlot, '静止或改变姿态');
+% saveFigures(figures, filePathForSave, ...
+%     {'静止或改变姿态：PWTT与BP的相关性'; '静止或改变姿态：PWF_elbw与BP的相关性';  '静止或改变姿态：PWF_wrst与BP的相关性'});
 
 %% 处理静止（改变姿态）测试集信号
 fileNames = {'static.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hs.mat', 'hs.mat'
@@ -72,6 +72,6 @@ saveFigures(figures, filePathForSave, ...
 %     (MBPs, PWTTs, MBPs_hs, PWTTs_hs, formulas, mean(corrPwttHrs_hs, 2), '喝水');
 % saveFigure(figCorr, filePathForSave, '喝水：标定后估计血压');
 
-save([filePathForSave, '/results.mat']);
+save([filePathForSave, '/result.mat']);
 
 
