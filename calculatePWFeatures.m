@@ -15,9 +15,16 @@ featureNames = {'PH','PRT','DNH','DNHr','DPH','DPHr','PWA','RBAr','DBAr','DiaAr'
 'SLP1','SLP2','SLP3','RBW10','RBW25','RBW33','RBW50','RBW66','RBW75','DBW10','DBW25','DBW33','DBW50','DBW66','DBW75',...
 'DNPT','KVAL','AmBE','DfAmBE','DNC','SC','DPW','DPWr'...
 };
+%% 初始化每个特征
 features = featureNames;
+for i=1:length(featureNames)
+    features{i} = [-1,0];
+end
 %后4个输入的长度必须都为N - 否则出错
 N = length(peaks(:,1));
+if N<2
+    return
+end
 if length(dicPeaks(:,1))~=N ||length(dicNotchs(:,1))~=N || length(valleys(:,1))~=N
     error('特征点检测输入有误');
 end
@@ -67,9 +74,6 @@ if calcNotch>0
     features{3} = [peaks(indexes&pValleys,1) tmp1];
     % 计算降中峽相对高度 - 要求同时有降中峡与峰谷值
     tmp = features{1}*[0;1];
-    if length(indexes)~=length(tmp(:,1))
-        error('test');
-    end
     tmp = tmp(indexes&pBoth,:);
     features{4} = [peaks(indexes&pBoth,1) tmp1./tmp];
     % 计算重博波高度 - 要求同时有重博波与谷值
@@ -214,9 +218,13 @@ features{27} = features{27}(pBoth(1:end-1)&pBiValleys,:);
 
 %%筛选计算出的特征值序列
 features{1}=features{1}(pBoth,:);
-for i=7:10
-    features{i} = features{i}((features{i}(:,1)>0)&~isnan(features{i}(:,2)),:);
+for i=7:10    
+    if ~isempty(features{i})
+        features{i} = features{i}((features{i}(:,1)>0)&~isnan(features{i}(:,2)),:);
+    end
 end
 for i=14:33
-    features{i} = features{i}((features{i}(:,1)>0)&~isnan(features{i}(:,2)),:);
+    if ~isempty(features{i})
+            features{i} = features{i}((features{i}(:,1)>0)&~isnan(features{i}(:,2)),:);
+    end
 end

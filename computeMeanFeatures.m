@@ -6,7 +6,9 @@ meanFeatures = zeros(len, 1);
 
 for i = 1 : len
    feature = features{i};
-   meanFeatures(i) = mean(feature(:, 2)); 
+   if ~isempty(feature)       
+        meanFeatures(i) = mean(feature(:, 2)); 
+   end
     
     
 end     %end for 

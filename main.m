@@ -11,7 +11,7 @@ filePathForSave = [filePath, '/result'];
 formulas = {'MK-MODEL', 'POWER', 'LINEAR', 'QUADRIC'};
 
 %% 处理运动前的信号
-fileNames = {'pf.mat', 'xc.mat' };  %'sj.mat', 'xc.mat','pf.mat', 'ydh.mat'
+fileNames = {'pf.mat'};  %'sj.mat', 'xc.mat','pf.mat', 'ydh.mat'
 [HRs, BPs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames, PWTTstats, PWFstats_elb, PWFstat_wrst, corrBpHr, figures]...
     = computeAll(filePathForDate, fileNames, needPlot, '标定数据');
 saveFigures(figures, filePathForSave, ...
