@@ -5,14 +5,16 @@ hrNomal = (hr - mean(hr)) ./ std(hr);
 
 fig = figure('Name', [titleOfSignals, ' - Compute the Correlations between Feature and BP.'], ...
     'OuterPos', get(0, 'ScreenSize'));
-len = size(features, 1);
+len = length(featureNames(:));%避免features为空导致的问题
 corrBP2Feature = zeros(len, 2);
 corrBP2HR = zeros(len, 2);
 corrFeature2HR = zeros(len, 2);
 bp1 = bp;
 hr1 = hr;
-
 [row, col] = getSubplotsSize(len);
+if isempty(features) || isempty(bp) || isempty(hr)
+    len = 0;
+end
 
 for i = 1 : len
     %% 准备工作
@@ -27,7 +29,6 @@ for i = 1 : len
     featureNormal = (feature - mean(feature)) ./ std(feature);
     
     %% 步骤2：找出对应点,并计算相关性
-    
     [corrBP2Feature(i, 1), corrBP2Feature(i, 2)] = corr(bp.', feature.');
     [corrBP2HR(i, 1), corrBP2HR(i, 2)] = corr(bp.', hr.');
     [corrFeature2HR(i, 1), corrFeature2HR(i, 2)] = corr(feature.', hr.');

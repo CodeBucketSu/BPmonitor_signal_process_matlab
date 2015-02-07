@@ -115,7 +115,10 @@ for j = 1 : length(fileNames)
         end
     end
 end
-
+if ~exist('corrFtrHrs_elbw','var')
+    corrFtrHrs_elbw = zeros(size(PWFnames(:),2),5);
+    corrFtrHrs_wrst = zeros(size(PWFnames(:),2),5);
+end
 %% 截取有效的数据
 HRs = HRs(:, 1:eventsCnt);      %每次测量时间对应的心率
 PWTTs = PWTTs(:, 1:eventsCnt);   %每次测量事件对应的传播时间
