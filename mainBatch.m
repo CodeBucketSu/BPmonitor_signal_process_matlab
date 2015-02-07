@@ -37,6 +37,7 @@ for i = 3:length(directories)
                             if(~isempty(pwttcorr))
                                 result = putDataIntoResultArrays(pwttcorr,pwfcorrelb,pwfcorrwrt,result);
                             end
+                            close all
                         end                        
                     end
                 end
