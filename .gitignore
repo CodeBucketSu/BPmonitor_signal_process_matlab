@@ -20,3 +20,6 @@ slprj/
 
 # Microsoft Word temp file extension
 *.tmp
+
+# Matlab Mat file
+*.mat
