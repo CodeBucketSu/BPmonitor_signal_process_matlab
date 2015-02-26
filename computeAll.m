@@ -85,9 +85,9 @@ for j = 1 : length(fileNames)
             figuresToClose = recordFeatureIfNeeded(figuresToClose, fig, needPlot || hasError);
 
             %% 必要时让用户判定检测数据是否可用,仅当可用时才记录数据
-%            if ~hasError || (needPlot || hasError) && input('本次事件的数据检测是否可用？（是：1， 否：其他）') == 1 
+            if ~hasError || (needPlot || hasError) && input('本次事件的数据检测是否可用？（是：1， 否：其他）') == 1 
 %            if ~hasError || (needPlot || hasError) 
-            if ~hasError
+%            if ~hasError
                 eventsCnt = eventsCnt + 1;
                 
                 %% 计录每次测量事件对应的各种特征和心率的相关系数

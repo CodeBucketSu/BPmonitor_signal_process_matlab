@@ -1,5 +1,5 @@
 clc, clear, close all
-dTs = {'CALIBRITION','EXERCISE','STATIC'};
+dTs = {'CALIBRITION','STATIC'};%,,'EXERCISE'
 result = {};
 [filePath] = uigetdir('L:\young',... % for syl
     '请选择数据所在的文件夹：请确保该文件夹下有且仅有所有人的数据！');

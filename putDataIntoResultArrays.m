@@ -1,8 +1,9 @@
 function [ resultArray ] = putDataIntoResultArrays(pwttcorr,pwfcorrelb,pwfcorrwrt, resultArrays )
 %PUTDATAINTORESULTARRAYS
-%把由每个人的每组测量数据计算出的12*4个PTT相关，33*4个PWe相关以及33*4个PWw相关加入到计算结果元胞内。
+%把由每个人的每组测量数据计算出的12*4个PTT特征与心率及血压的相关，34*4个PWe特征与心率及血压的相关以及
+%34*4个PWw特征与心率及血压的相关加入到计算结果元胞内。
 %  结果元胞结构：
-%       第一个人数据组1   第一个人数据组2 ... 第一个人数据组n 第二个人数据组1 ... 第k个人1 ... 
+%       第一个人数据组1   第一个人数据组2 ... 第一个人数据组n 第二个人数据组1 ... 第k个人数据组1 ... 
 %  ┌ corr(PWTT,BP)                                                                                                                   
 %  │ p      (PWTT,BP)                                                                                                                    
 %  │corr(PWTT,HR)                                                                                                                     
