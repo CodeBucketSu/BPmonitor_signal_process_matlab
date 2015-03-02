@@ -6,20 +6,20 @@ function [HRs, BPs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames, PWTTstats, PWFstats_el
 %
 % OUTPUT： 
 %   HRs：                1   x   lenEvents   每次测量事件对应的心率
-%   BPs：                3   x   lenEvents   每次测量时间对应的血压，顺序为：收缩压，舒张压，平均压
+%   BPs：                3   x   lenEvents   每次测量时间对应的血压，顺序为：平均压，收缩压，舒张压
 %   PWTTs：              12  x   lenEvents   每次测量事件对应的传播时间
 %   PWFs_elb：           K   x   lenEvents   每次测量事件对应的手肘脉搏波特征值，K为特征值种类个数             
 %   PWFs_wrst：          K   x   lenEvents   每次测量事件对应的手碗脉搏波特征值，K为特征值种类个数
 %   PWFnames：           K   x   1           脉搏波特征值名称，元胞数组
-%   PWTTstats：          12  x   3           PWTT的统计值：
+%   PWTTstats：          12  x   15           PWTT的统计值(血压分为MBP/SBP/DBP)：
 %                                               平均PWTT和血压的相关性
 %                                               平均PWTT和平均HR的相关性
 %                                               逐拍PWTT和逐拍HR的相关性的均值
-%   PWFstats_elb：       K   x   3           手肘脉搏波特征的统计值：
+%   PWFstats_elb：       K   x   15           手肘脉搏波特征的统计值(血压分为MBP/SBP/DBP)：
 %                                               平均PWF和血压的相关性
 %                                               平均PWF和平均HR的相关性
 %                                               逐拍PWF和逐拍HR的相关性的均值
-%   PWFstat_wrst：       K   x   3           手腕脉搏波特征的统计值：
+%   PWFstat_wrst：       K   x   15           手腕脉搏波特征的统计值(血压分为MBP/SBP/DBP)：
 %                                               平均PWF和血压的相关性
 %                                               平均PWF和平均HR的相关性
 %                                               逐拍PWF和逐拍HR的相关性的均值
@@ -85,9 +85,9 @@ for j = 1 : length(fileNames)
             figuresToClose = recordFeatureIfNeeded(figuresToClose, fig, needPlot || hasError);
 
             %% 必要时让用户判定检测数据是否可用,仅当可用时才记录数据
-            if ~hasError || (needPlot || hasError) && input('本次事件的数据检测是否可用？（是：1， 否：其他）') == 1 
+%            if ~hasError || (needPlot || hasError) && input('本次事件的数据检测是否可用？（是：1， 否：其他）') == 1 
 %            if ~hasError || (needPlot || hasError) 
-%            if ~hasError
+            if ~hasError
                 eventsCnt = eventsCnt + 1;
                 
                 %% 计录每次测量事件对应的各种特征和心率的相关系数
@@ -138,21 +138,54 @@ figures = recordFeatureIfNeeded(figures, figCorr, 1);
 % 封装血压值
 BPs = [MBPs; SBPs; DBPs];
 % 封装PWTT统计值
-PWTTstats = zeros(12, 3);
+PWTTstats = zeros(12, 15);
 PWTTstats(:, 1:2) = corrPwttBp;
 PWTTstats(:, 3:4) = corrPwttHr;
 PWTTstats(:, 5) = mean(corrPwttHrs, 2);
 % 封装手肘PWF统计值
-PWFstats_elb = zeros(length(corrPwfBp_elbw), 3);
+PWFstats_elb = zeros(length(corrPwfBp_elbw), 15);
 PWFstats_elb(:, 1:2) = corrPwfBp_elbw;
 PWFstats_elb(:, 3:4) = corrPwfHr_elbw; 
 PWFstats_elb(:, 5) = mean(corrFtrHrs_elbw, 2); 
 % 封装手腕PWF统计值
-PWFstat_wrst = zeros(length(corrPwfBp_wrst), 3);
+PWFstat_wrst = zeros(length(corrPwfBp_wrst), 15);
 PWFstat_wrst(:, 1:2) = corrPwfBp_wrst;
 PWFstat_wrst(:, 3:4) = corrPwfHr_wrst; 
 PWFstat_wrst(:, 5) = mean(corrFtrHrs_wrst, 2); 
 
+%% 计算12种pwtt和实测血压的相关性，计算12组CorrBpHr与心率的相关性， 计算血压与心率的相关性
+[corrPwttBp, corrPwttHr, ~, ~] = computeCorrelationsBetweenFeatureAndBP(SBPs, PWTTs, pwttNames, HRs, mean(corrPwttHrs, 2), titleOfSignals);
+[corrPwfBp_elbw, corrPwfHr_elbw, ~, ~] = computeCorrelationsBetweenFeatureAndBP(SBPs, PWFs_elb, PWFnames, HRs, mean(corrFtrHrs_elbw, 2), titleOfSignals);
+[corrPwfBp_wrst, corrPwfHr_wrst, ~, ~] = computeCorrelationsBetweenFeatureAndBP(SBPs, PWFs_wrst, PWFnames, HRs, mean(corrFtrHrs_wrst, 2), titleOfSignals);
+% 封装PWTT统计值
+PWTTstats(:, 6:7) = corrPwttBp;
+PWTTstats(:, 8:9) = corrPwttHr;
+PWTTstats(:, 10) = mean(corrPwttHrs, 2);
+% 封装手肘PWF统计值
+PWFstats_elb(:, 6:7) = corrPwfBp_elbw;
+PWFstats_elb(:, 8:9) = corrPwfHr_elbw; 
+PWFstats_elb(:, 10) = mean(corrFtrHrs_elbw, 2); 
+% 封装手腕PWF统计值
+PWFstat_wrst(:, 6:7) = corrPwfBp_wrst;
+PWFstat_wrst(:, 8:9) = corrPwfHr_wrst; 
+PWFstat_wrst(:, 10) = mean(corrFtrHrs_wrst, 2); 
+
+%% 计算12种pwtt和实测血压的相关性，计算12组CorrBpHr与心率的相关性， 计算血压与心率的相关性
+[corrPwttBp, corrPwttHr, corrBpHr, ~] = computeCorrelationsBetweenFeatureAndBP(DBPs, PWTTs, pwttNames, HRs, mean(corrPwttHrs, 2), titleOfSignals);
+[corrPwfBp_elbw, corrPwfHr_elbw, ~, ~] = computeCorrelationsBetweenFeatureAndBP(DBPs, PWFs_elb, PWFnames, HRs, mean(corrFtrHrs_elbw, 2), titleOfSignals);
+[corrPwfBp_wrst, corrPwfHr_wrst, ~, ~] = computeCorrelationsBetweenFeatureAndBP(DBPs, PWFs_wrst, PWFnames, HRs, mean(corrFtrHrs_wrst, 2), titleOfSignals);
+% 封装PWTT统计值
+PWTTstats(:, 11:12) = corrPwttBp;
+PWTTstats(:, 13:14) = corrPwttHr;
+PWTTstats(:, 15) = mean(corrPwttHrs, 2);
+% 封装手肘PWF统计值
+PWFstats_elb(:, 11:12) = corrPwfBp_elbw;
+PWFstats_elb(:, 13:14) = corrPwfHr_elbw; 
+PWFstats_elb(:, 15) = mean(corrFtrHrs_elbw, 2); 
+% 封装手腕PWF统计值
+PWFstat_wrst(:, 11:12) = corrPwfBp_wrst;
+PWFstat_wrst(:, 13:14) = corrPwfHr_wrst; 
+PWFstat_wrst(:, 15) = mean(corrFtrHrs_wrst, 2); 
 end
 
 %% 以下为子函数
