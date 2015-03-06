@@ -51,4 +51,4 @@ for i = 3:length(directories)
         end        
     end
 end
-save('resultWithAllKindOfBPs.mat','result_mbp','result_sbp','result_dbp');
+save('resultWithAllKindOfBPsOnlyExercise_change_percent_to_sum.mat','result_mbp','result_sbp','result_dbp');

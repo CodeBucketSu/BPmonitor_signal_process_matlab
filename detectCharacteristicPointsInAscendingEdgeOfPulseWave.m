@@ -6,9 +6,9 @@ function [percent10s, percent50s] = detectCharacteristicPointsInAscendingEdgeOfP
 %   onsets：脉搏波起始点
 %   peaks：脉搏波波峰
 % 输出：
-%   percent10s： N x 2   10%点的位置和幅值
-%   percent50s： N x 2   50%点的位置和幅值
-
+%   percent10s： N x 2   10%点的位置和幅值 -> 60%
+%   percent50s： N x 2   50%点的位置和幅值 -> 70%
+ 
 %% 步骤1：去除漏检的关键点
 maxInterval = median(peaks(2:end, 1) - peaks(1:end-1, 1))/2;
 [onsets, peaks] = match2data(onsets, peaks, maxInterval);
@@ -20,9 +20,9 @@ percent50s = zeros(size(onsets));
 %% 步骤3：对每个心动周期检测关键点
 for i = 1 : size(onsets, 1)
     risingEdge = data(onsets(i, 1) : peaks(i, 1));
-    p10Idx = detectKpercentKeyPoint(risingEdge, 0.1) + onsets(i, 1) - 1;
+    p10Idx = detectKpercentKeyPoint(risingEdge, 0.1) + onsets(i, 1) - 1; % 0.1-> 0.6->0.8
     percent10s(i, :) = [p10Idx, data(p10Idx)];
-    p50Idx = detectKpercentKeyPoint(risingEdge, 0.5) + onsets(i, 1) - 1;
+    p50Idx = detectKpercentKeyPoint(risingEdge, 0.5) + onsets(i, 1) - 1; % 0.5-> 0.7->0.9
     percent50s(i, :) = [p50Idx, data(p50Idx)];
 end % for 
 

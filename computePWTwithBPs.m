@@ -43,6 +43,11 @@ else
     fig = [];
 end
 
+
+% %将90%点变为90%+10%点的和，再计算相关性
+% [pwtRise,pwtKey] = mapSignals(pwtRise,pwtKey);
+% pwtRise = pwtRise + pwtKey;
+    
 %% 步骤7：去除异常点
 pwtPeak = removeOutlier(pwtPeak, 2, 10);
 pwtValley = removeOutlier(pwtValley, 2, 10);
