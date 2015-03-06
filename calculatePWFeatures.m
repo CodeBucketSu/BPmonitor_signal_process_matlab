@@ -10,10 +10,10 @@ function [features,featureNames] = calculatePWFeatures(pw,peaks,valleys,dicNotch
 %   features,featureNames:特征/特征名元胞数组 K*2 [峰值位置,特征值]
 %各种逐拍特征名及其含义见文档
 
-%% 初始化34个特征名
+%% 初始化35个特征名
 featureNames = {'PH','PRT','DNH','DNHr','DPH','DPHr','PWA','RBAr','DBAr','DiaAr',...
 'SLP1','SLP2','SLP3','RBW10','RBW25','RBW33','RBW50','RBW66','RBW75','DBW10','DBW25','DBW33','DBW50','DBW66','DBW75',...
-'DNPT','KVAL','AmBE','DfAmBE','DNC','SC','DPW','DPWr','PDNT'...
+'DNPT','KVAL','AmBE','DfAmBE','DNC','SC','DPW','DPWr','PDNT','PDPT'...
 };
 %% 初始化每个特征
 features = featureNames;
@@ -72,6 +72,9 @@ if calcNotch>0
     %计算波峰至降中峡传播时间 - 要求同时有降中峡与峰值
     tmp1 = dicNotchs(indexes&pPeaks,1) - peaks(indexes&pPeaks,1);
     features{34} = [peaks(indexes&pPeaks,1) tmp1];
+    %计算波峰至重博波传播时间 - 要求同时有重博波与峰值    
+    tmp1 = dicPeaks(indexes&pPeaks,1) - peaks(indexes&pPeaks,1);
+    features{35} = [peaks(indexes&pPeaks,1) tmp1];
     %计算降中峽高度 - 要求同时有降中峡与谷值
     tmp1 = dicNotchs(indexes&pValleys,2) - valleys(indexes&pValleys,2);
     features{3} = [peaks(indexes&pValleys,1) tmp1];

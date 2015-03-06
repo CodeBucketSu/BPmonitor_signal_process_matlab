@@ -1,6 +1,9 @@
 clc, clear, close all
-dTs = {'CALIBRITION','STATIC'};%,,'EXERCISE'
-result = {};
+set(0,'DefaultFigureVisible','off');
+dTs = {'EXERCISE'};%'CALIBRITION','STATIC','EXERCISE'
+result_mbp = {};
+result_sbp = {};
+result_dbp = {};
 [filePath] = uigetdir('L:\young',... % for syl
     '请选择数据所在的文件夹：请确保该文件夹下有且仅有所有人的数据！');
 directories = dir(filePath);
@@ -35,13 +38,17 @@ for i = 3:length(directories)
                             [ pwttcorr,pwfcorrelb,pwfcorrwrt ] = processOneTypeData(onemeasurepath,dTs{n});
                             
                             if(~isempty(pwttcorr))
-                                result = putDataIntoResultArrays(pwttcorr,pwfcorrelb,pwfcorrwrt,result);
+                                result_mbp = putDataIntoResultArrays(pwttcorr(:,1:5),pwfcorrelb(:,1:5),pwfcorrwrt(:,1:5),result_mbp);
+                                result_sbp = putDataIntoResultArrays(pwttcorr(:,6:10),pwfcorrelb(:,6:10),pwfcorrwrt(:,6:10),result_sbp);
+                                result_dbp = putDataIntoResultArrays(pwttcorr(:,11:15),pwfcorrelb(:,11:15),pwfcorrwrt(:,11:15),result_dbp);                                
                             end
                             close all
-                        end                        
+                        end     
+                        
                     end
                 end
             end            
         end        
     end
 end
+save('resultWithAllKindOfBPsOnlyExercise_change_percent_to_sum.mat','result_mbp','result_sbp','result_dbp');
