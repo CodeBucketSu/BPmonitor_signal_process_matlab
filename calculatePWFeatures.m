@@ -38,6 +38,10 @@ pBoth=pPeaks&pValleys;
 valley2valleyDists=valleys(pValleys,1);
 valley2valleyDists=valley2valleyDists(2:end) - valley2valleyDists(1:end-1);
 threshold=median(valley2valleyDists)*1.5;
+%首先计算峰-峰值阈值
+peak2peakDists=peaks(pPeaks,1);
+peak2peakDists=peak2peakDists(2:end) - peak2peakDists(1:end-1);
+pThreshold=median(peak2peakDists)*1.5;
 
 %降中峽/重博波预处理
 dicNotchs = dicNotchs(1:N,:);
@@ -69,12 +73,12 @@ features{2} = peaks(pBoth,1)*[1,1] - valleys(pBoth,1)*[0,1];
 
 %%
 if calcNotch>0
-    %计算波峰至降中峡传播时间 - 要求同时有降中峡与峰值
-    tmp1 = dicNotchs(indexes&pPeaks,1) - peaks(indexes&pPeaks,1);
-    features{34} = [peaks(indexes&pPeaks,1) tmp1];
-    %计算波峰至重博波传播时间 - 要求同时有重博波与峰值    
-    tmp1 = dicPeaks(indexes&pPeaks,1) - peaks(indexes&pPeaks,1);
-    features{35} = [peaks(indexes&pPeaks,1) tmp1];
+%     %计算波谷至降中峡传播时间 - 要求同时有降中峡与谷值
+%     tmp1 = dicNotchs(indexes&pValleys,1) - valleys(indexes&pValleys,1);
+%     features{34} = [peaks(indexes&pValleys,1) tmp1];
+    %计算波谷至重博波传播时间 - 要求同时有重博波与谷值    
+%     tmp1 = dicPeaks(indexes&pValleys,1) - valleys(indexes&pValleys,1);
+%     features{35} = [peaks(indexes&pValleys,1) tmp1];
     %计算降中峽高度 - 要求同时有降中峡与谷值
     tmp1 = dicNotchs(indexes&pValleys,2) - valleys(indexes&pValleys,2);
     features{3} = [peaks(indexes&pValleys,1) tmp1];
@@ -124,9 +128,15 @@ end
 
 %% 
 j=1;
+k=1;
+m=1;
+n=1;
 features{7} = peaks(1:N-1,:)*[1,0;0,0];
 features{7}(:,2)=features{7}(:,2)+NaN;
 features{8} = features{7};
+features{34} = features{8};
+features{35} = features{8};
+
 features{9} = peaks(indexesEndWith0,:)*[1,0;0,0];
 features{9}(:,2)=features{9}(:,2)+NaN;
 features{10} = features{9};
@@ -157,27 +167,37 @@ for i=1:N-1
             %计算与降中峽相关的两个相对面积
             features{9}(j,2) = calcArea(pw(peaks(i,1):dicNotchs(i,1)) - minPW) / features{7}(i,2) ;
             features{10}(j,2) = calcArea(pw(dicNotchs(i,1):valleys(i+1,1)) - minPW) / features{7}(i,2) ;
+            
        end
+   end
+   
+   if valleys(i,1)&&peaks(i,1)>0 && peaks(i+1,1)>0 &&(peaks(i+1,1) - peaks(i,1)<=pThreshold)
+       %校正后的LVET
+        features{34}(j,2) = dicNotchs(i,1) - valleys(i,1) + 1000*60*1.7/(peaks(i+1,1) - peaks(i,1));
+        %脉率
+        features{35}(j,2) = 60000/(peaks(i+1,1) - peaks(i,1));
+        j=j+1;
    end
     
     if dicNotchs(i,1) > 0         
        if valleys(i,1)>0 &&valleys(i+1,1)>0 && peaks(i,1)>0&&(valleys(i+1,1) - valleys(i,1)<=threshold)
            % 计算G
-            features{30}(j,2) = (valleys(i+1,1) - dicNotchs(i,1))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1))...
+            features{30}(m,2) = (valleys(i+1,1) - dicNotchs(i,1))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1))...
                 - pw(dicNotchs(i,1));
             
            % 计算LeBA
            tmp =(valleys(i+1,1) - (peaks(i,1):valleys(i+1,1)))*pw(peaks(i,1))/(valleys(i+1,1) - peaks(i,1));
            tmp = tmp(:)  - pw(peaks(i,1):valleys(i+1,1));
-           features{31}(j,2) = sqrt(tmp(:)'*tmp(:)/length(tmp));
+           features{31}(m,2) = sqrt(tmp(:)'*tmp(:)/length(tmp));
+           m=m+1;
        end
        % 计算TmCpt 与 TmpctR - 只有在两相邻谷值都存在且中间没有漏检的波形时才会计算
        if valleys(i,1)>0 && valleys(i+1,1)>0&&(valleys(i+1,1) - valleys(i,1)<=threshold)
            tmp = pw(dicNotchs(i,1):valleys(i+1,1)) - pw(dicNotchs(i,1));
-           features{32}(j,2) = sum(tmp>0);
-           features{33}(j,2) = features{32}(j,2)/(valleys(i+1,1) - valleys(i,1));
+           features{32}(n,2) = sum(tmp>0);
+           features{33}(n,2) = features{32}(n,2)/(valleys(i+1,1) - valleys(i,1));           
+            n = n+1;
        end
-        j = j+1;
     end
     
     % 计算各相对高度点到波峰的时间
@@ -229,7 +249,7 @@ for i=7:10
         features{i} = features{i}((features{i}(:,1)>0)&~isnan(features{i}(:,2)),:);
     end
 end
-for i=14:33
+for i=14:35
     if ~isempty(features{i})
             features{i} = features{i}((features{i}(:,1)>0)&~isnan(features{i}(:,2)),:);
     end

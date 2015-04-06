@@ -51,4 +51,4 @@ for i = 3:length(directories)
         end        
     end
 end
-save('resultWithAllKindOfBPsOnlyExercise_change_percent_to_sum.mat','result_mbp','result_sbp','result_dbp');
+save('resultWithAllKindOfBPsOnlyExercise_change_34_to_LVETI_35_to_PR_valley_to_peak.mat','result_mbp','result_sbp','result_dbp');

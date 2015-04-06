@@ -38,7 +38,7 @@ end
 % saveFigures(figures, filePathForSave, ...
 %     {'标定数据：PWTT与BP的相关性'; '标定数据：PWF_elbw与BP的相关性';  '标定数据：PWF_wrst与BP的相关性'});
 
-% save([filePathForSave, fileNameforSave]);
+save([filePathForSave, fileNameforSave]);
 %%返回
 pwttcorr = PWTTstats;
 pwfcorrelb = PWFstats_elb;

@@ -7,6 +7,10 @@ pwttcorr = [];
 pwfcorrelb = [];
 pwfcorrwrt = [];
 [ pwttcorr_p_c,pwfcorrelb_p_c,pwfcorrwrt_p_c ] = mainFunc('PEAK',dataType,path);
+
+% pwttcorr = pwttcorr_p_c;
+% pwfcorrelb = pwfcorrelb_p_c;
+% pwfcorrwrt = pwfcorrwrt_p_c;
 if ~isempty(pwttcorr_p_c)
     [ pwttcorr_d_c,pwfcorrelb_d_c,pwfcorrwrt_d_c ] = mainFunc('DISTANCE',dataType,path);                            
     [ pwttcorr_w_c,pwfcorrelb_w_c,pwfcorrwrt_w_c ] = mainFunc('WAVELET',dataType,path);
