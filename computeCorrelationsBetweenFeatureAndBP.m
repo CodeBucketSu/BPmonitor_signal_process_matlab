@@ -4,7 +4,7 @@ bpNomal = (bp - mean(bp)) ./ std(bp);
 hrNomal = (hr - mean(hr)) ./ std(hr);
 
 fig = figure('Name', [titleOfSignals, ' - Compute the Correlations between Feature and BP.'], ...
-    'OuterPos', get(0, 'ScreenSize'));
+    'Position', get(0, 'ScreenSize'));
 len = length(featureNames(:));%避免features为空导致的问题
 corrBP2Feature = zeros(len, 2);
 corrBP2HR = zeros(len, 2);

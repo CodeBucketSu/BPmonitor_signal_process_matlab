@@ -6,7 +6,7 @@ hrNomal(:, 2) = (hr(:, 2) - mean(hr(:, 2))) ./ std(hr(:, 2));
 
 if needPlot
     fig = figure('Name', [titleOfSignals, ' - Correlations between feature and HR.'],...
-        'Outerpos', get(0, 'ScreenSize'));
+        'Position', get(0, 'ScreenSize'));
 else
     fig = 0;
 end

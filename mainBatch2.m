@@ -8,7 +8,7 @@ needPlot = 0;
 
 %选择标定数据集所在的文件夹s
 disp '请选择标定数据集所在的文件夹s';
-paths = uipickfiles('REFilter','\$','FilterSpec','L:\young\syl');
+paths = uipickfiles('REFilter','\$','FilterSpec','E:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\syl');
 if isempty(path)
     return
 end

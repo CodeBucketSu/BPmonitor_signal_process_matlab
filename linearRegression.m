@@ -21,3 +21,16 @@ for i=1:length(BPs(:,1))
     coefs(i,:) = coef';
     errors(i) = mean(abs(error));
 end
+%绘制曲线
+%n*k矩阵，n次拟合得到的k种血压值
+BPRegression = features*coefs';
+set(0,'DefaultFigureVisible','on');
+figure
+for i=1:length(BPs(:,1))
+	subplot(length(BPs(:,1)),1,i)
+	plot(BPs(i,:),'ro-'),
+	hold on
+	plot(BPRegression(:,i),'ko-');
+	title(strcat('red:source BP blue:regression BP. r=',num2str(corr(BPs(i,:)',BPRegression(:,i)))));
+end
+set(0,'DefaultFigureVisible','off');
