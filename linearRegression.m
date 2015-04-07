@@ -13,10 +13,11 @@ function [coefs,errors]...
 %    n次测量得到的m种特征序列。每种特征只有n维的原因是对每种特征而言，在每次血压测量过程中测得了p个值，然后对这p个值求均值得到n个平均值，分别对应于每次测量
 
 %分配返回值空间
-coefs = zeros(length(BPs(:,1)), length(features(:,1)));
+coefs = zeros(length(BPs(:,1)), length(features(1,:)));
 errors=zeros(length(BPs(:,1)), 1);
 %完成拟合
 for i=1:length(BPs(:,1))
-    [coefs(i,:),~,error] = regress(BPs(i,:)',features);
+    [coef,~,error] = regress(BPs(i,:)',features);
+    coefs(i,:) = coef';
     errors(i) = mean(abs(error));
 end

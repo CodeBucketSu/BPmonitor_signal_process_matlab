@@ -20,9 +20,12 @@ PWFs = selectPWFs(HRs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames);
 end
 
 function [PWFs] = selectPWFs(HRs, PWTTs, PWFs_elb, PWFs_wrst,PWFnames)
+%采用肘部脉搏波特征
 useElb = 1;
+%采用第12个PWTT
 selectedPwttNum = 12;
-selectedPWFNames = {'PRT','KVAL'};
+%采用的脉搏波特征特征名
+selectedPWFNames = {'KVAL','PRT'};
 PWFs(1,:) = PWTTs(selectedPwttNum,:);
 for j=1:length(selectedPWFNames)
         for i=1:length(PWFnames)

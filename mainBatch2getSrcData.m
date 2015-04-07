@@ -6,7 +6,7 @@ function [BPs, PWFs] = mainBatch2getSrcData(paths,needPlot)
             if isempty(BPs)
                  BPs = bps;
             else
-                 BPS = [BPs bps];
+                 BPs = [BPs bps];
             end
             if isempty(PWFs)
                 PWFs=pwfs;
