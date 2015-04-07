@@ -14,7 +14,7 @@ plot(y)
 y = y * ones(1,length(coefs(:,1)));
 
 %¼ÆËãÊä³ö¾ØÕó
-outputs = x * coefs';
+outputs = [ones(length(x(:,1)),1),x] * coefs';
 
 %¼ÆËãÎó²î¾ØÕó
 errors = abs(outputs - y);
