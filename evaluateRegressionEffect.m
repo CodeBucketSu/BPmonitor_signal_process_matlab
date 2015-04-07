@@ -9,13 +9,24 @@ function [errors] = evaluateRegressionEffect(y,coefs,x)
 
 %预处理输入
 y = y(:);
+figure
+plot(y)
 y = y * ones(1,length(coefs(:,1)));
 
 %计算输出矩阵
 outputs = x * coefs';
 
 %计算误差矩阵
-outputs = abs(outputs - y);
+errors = abs(outputs - y);
 
 %计算返回值
-errors = mean(outputs);
+errors = mean(errors);
+
+%绘图
+set(0,'DefaultFigureVisible','on');
+figure
+plot(outputs(:,1),'ko-'),
+hold on,
+plot(y(:,1),'ro-');
+title(strcat('red:source BP blue:regression BP. r=',num2str(corr(outputs(:,1),y))));
+set(0,'DefaultFigureVisible','off');

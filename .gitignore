@@ -23,3 +23,8 @@ slprj/
 
 # Matlab Mat file
 *.mat
+
+# System file
+*.zip
+*.jpg
+*.log
