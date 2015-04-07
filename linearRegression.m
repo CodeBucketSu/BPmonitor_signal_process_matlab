@@ -28,9 +28,17 @@ set(0,'DefaultFigureVisible','on');
 figure
 for i=1:length(BPs(:,1))
 	subplot(length(BPs(:,1)),1,i)
-	plot(BPs(i,:),'ro-'),
+	plot2 = plot(BPs(i,:),'ro-'),
 	hold on
-	plot(BPRegression(:,i),'ko-');
-	title(strcat('red:source BP blue:regression BP. r=',num2str(corr(BPs(i,:)',BPRegression(:,i)))));
+	plot1 = plot(BPRegression(:,i),'ko-');
+% 	title(['red:source BP blue:regression BP. r=',num2str(corr(BPs(i,:)',BPRegression(:,i))),'\\']);
+    legend([plot1, plot2], {'BPest', 'BPreal'});
+    ttl = {[' r=',num2str(corr(BPs(i,:)',BPRegression(:,i))), ' err=', num2str(errors(i))]};
+    strCoefs = '';
+    for r = 1:size(coefs, 2)
+        strCoefs = [strCoefs, num2str(coefs(i, r)), ','];
+    end
+    ttl{end + 1} = strCoefs;
+    title(ttl);
 end
 set(0,'DefaultFigureVisible','off');

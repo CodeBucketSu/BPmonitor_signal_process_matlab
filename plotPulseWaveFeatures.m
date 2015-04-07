@@ -2,7 +2,7 @@ function [fig] = plotPulseWaveFeatures(features, featureNames, titleOfSignals)
 % plotPulseWaveFeatures(features, featureNames) ´òÓ¡Âö²«²¨ÌØÕ÷
 
 fig = figure('Name', [titleOfSignals, ' - features of pulse wave'], ...
-    'OuterPos', get(0, 'ScreenSize'));
+    'Position', get(0, 'ScreenSize'));
 
 len = length(features);
 [row, col] = getSubplotsSize(len);

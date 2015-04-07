@@ -15,6 +15,9 @@ y = y * ones(1,length(coefs(:,1)));
 
 %¼ÆËãÊä³ö¾ØÕó
 outputs = [ones(length(x(:,1)),1),x] * coefs';
+% only for wl
+outputs = outputs([1:14, 17:20]);
+y = y([1:14, 17:20]);
 
 %¼ÆËãÎó²î¾ØÕó
 errors = abs(outputs - y);
@@ -25,8 +28,9 @@ errors = mean(errors);
 %»æÍ¼
 set(0,'DefaultFigureVisible','on');
 figure
-plot(outputs(:,1),'ko-'),
+plot1 = plot(outputs(:,1),'ko-'),
 hold on,
-plot(y(:,1),'ro-');
-title(strcat('red:source BP blue:regression BP. r=',num2str(corr(outputs(:,1),y))));
+plot2 = plot(y(:,1),'ro-');
+legend([plot1, plot2], {'BPest', 'BPreal'});
+title(['r=',num2str(corr(outputs(:,1),y)),' err=:', num2str(errors)]);
 set(0,'DefaultFigureVisible','off');
