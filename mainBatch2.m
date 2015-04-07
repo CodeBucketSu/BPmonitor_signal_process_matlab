@@ -22,7 +22,7 @@ end
 [BPs,PWFs] = mainBatch2getSrcData(paths,needPlot);
 %% 评估效果
 regressionErrors = zeros(length(BPs(:,1)),1);
-%%对每种血压生成误差
+%% 对每种血压生成误差
 for i=1:length(BPs(:,1))
     regressionErrors(i) = evaluateRegressionEffect(BPs(i,:),coefs(i,:),PWFs');
 end
