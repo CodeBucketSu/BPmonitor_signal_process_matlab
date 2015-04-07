@@ -1,6 +1,6 @@
 clc, clear, close all
 set(0,'DefaultFigureVisible','off');
-dTs = {'EXERCISE'};%'CALIBRITION','STATIC','EXERCISE'
+dTs = {'CALIBRITION'};%'CALIBRITION','STATIC','EXERCISE'
 result_mbp = {};
 result_sbp = {};
 result_dbp = {};
