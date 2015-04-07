@@ -8,7 +8,7 @@ needPlot = 0;
 
 %选择标定数据集所在的文件夹s
 disp '请选择标定数据集所在的文件夹s';
-paths = uipickfiles('REFilter','\$','FilterSpec','\media\henryalps\Ubuntu/ 14.0\young\syl');
+paths = uipickfiles('REFilter','\$');
 if isempty(path)
     return
 end
