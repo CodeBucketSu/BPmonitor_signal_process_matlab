@@ -25,15 +25,16 @@ useElb = 1;
 %采用第n个PWTT
 selectedPwttNum = 5;
 %采用的脉搏波特征特征名
-selectedPWFNames = {'PRT'};%{'KVAL','PRT'};
-PWFs(1,:) = PWTTs(selectedPwttNum,:);
+selectedPWFNames = {'KVAL','PRT','DPW','DPWr','DiaAr','DNHr'};%{'KVAL','PRT','DPW','DPWr','DiaAr'};
+PWFs(1,:) = PWTTs(selectedPwttNum,:);   currRow = 1;
+% PWFs(currRow,:) = HRs;   currRow = 2;
 for j=1:length(selectedPWFNames)
         for i=1:length(PWFnames)
                 if strcmp(PWFnames{i},selectedPWFNames{j})
                     if useElb == 1
-                        PWFs(1+j,:) = PWFs_elb(i,:);
+                        PWFs(currRow+j,:) = PWFs_elb(i,:);
                     else
-                        PWFs(1+j,:) = PWFs_wrst(i,:);
+                        PWFs(currRow+j,:) = PWFs_wrst(i,:);
                     end
                     break;
                 end

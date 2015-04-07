@@ -13,24 +13,32 @@ function [coefs,errors]...
 %    n次测量得到的m种特征序列。每种特征只有n维的原因是对每种特征而言，在每次血压测量过程中测得了p个值，然后对这p个值求均值得到n个平均值，分别对应于每次测量
 
 %分配返回值空间
-coefs = zeros(length(BPs(:,1)), length(features(1,:)));
+coefs = zeros(length(BPs(:,1)), length(features(1,:)) + 1);
 errors=zeros(length(BPs(:,1)), 1);
 %完成拟合
 for i=1:length(BPs(:,1))
-    [coef,~,error] = regress(BPs(i,:)',features);
+    [coef,~,error] = regress(BPs(i,:)',[ones(length(features(:,1)),1),features]);
     coefs(i,:) = coef';
     errors(i) = mean(abs(error));
 end
 %绘制曲线
 %n*k矩阵，n次拟合得到的k种血压值
-BPRegression = features*coefs';
+BPRegression = [ones(length(features(:,1)),1),features]*coefs';
 set(0,'DefaultFigureVisible','on');
 figure
 for i=1:length(BPs(:,1))
 	subplot(length(BPs(:,1)),1,i)
-	plot(BPs(i,:),'ro-'),
+	plot2 = plot(BPs(i,:),'ro-'),
 	hold on
-	plot(BPRegression(:,i),'ko-');
-	title(strcat('red:source BP blue:regression BP. r=',num2str(corr(BPs(i,:)',BPRegression(:,i)))));
+	plot1 = plot(BPRegression(:,i),'ko-');
+% 	title(['red:source BP blue:regression BP. r=',num2str(corr(BPs(i,:)',BPRegression(:,i))),'\\']);
+    legend([plot1, plot2], {'BPest', 'BPreal'});
+    ttl = {[' r=',num2str(corr(BPs(i,:)',BPRegression(:,i))), ' err=', num2str(errors(i))]};
+    strCoefs = '';
+    for r = 1:size(coefs, 2)
+        strCoefs = [strCoefs, num2str(coefs(i, r)), ','];
+    end
+    ttl{end + 1} = strCoefs;
+    title(ttl);
 end
 set(0,'DefaultFigureVisible','off');
