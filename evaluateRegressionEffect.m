@@ -1,40 +1,47 @@
-function [errors] = evaluateRegressionEffect(y,coefs,x)
-%evaluateRegressionEffectÓÃÓÚÆÀ¹Àk×éÄâºÏÏµÊý¶ÔÓÚk×é´ý²âÊÔÊä³öÊý¾ÝµÄ¹À¼ÆÐ§¹û¡£Ä¬ÈÏÇé¿öÏÂÈÏÎªÕâÐ©ÏµÊý¶¼ÊÇÏßÐÔÄâºÏÏµÊý¡£
+function [errors] = evaluateRegressionEffect(y,coefs,x,varargin)
+%evaluateRegressionEffectç”¨äºŽè¯„ä¼°kç»„æ‹Ÿåˆç³»æ•°çš„æ•ˆæžœã€‚é»˜è®¤æƒ…å†µä¸‹è®¤ä¸ºè¿™äº›ç³»æ•°éƒ½æ˜¯çº¿æ€§æ‹Ÿåˆç³»æ•°ã€‚
 %OUTPUT
-%errors 1*k ¶ÔÓÚcoefs½øÐÐÆÀ¹ÀµÃµ½µÄk¸öÆ½¾ùÎó²î 
+%errors 1*k å¯¹äºŽcoefsè¿›è¡Œè¯„ä¼°å¾—åˆ°çš„kä¸ªå¹³å‡è¯¯å·® 
 %INPUT
-%y    k*n¾ØÕó    k×éÎ¬ÊýÎªnµÄÊä³ö½á¹ûÖµ
-%coefs    k*m    k×éÎ¬ÊýÎªmµÄÄâºÏÏµÊý
-%x    n*m¾ØÕó    n×éÎ¬ÊýÎªmµÄÊäÈë
-
-%Ô¤¶¨Òå
+%y    n*1çŸ©é˜µ    nç»„è¾“å‡ºç»“æžœå€¼
+%coefs    k*mçŸ©é˜µ    kç»„ç»´æ•°ä¸ºmçš„æ‹Ÿåˆç³»æ•°
+%x    n*mçŸ©é˜µ    nç»„ç»´æ•°ä¸ºmçš„è¾“å…¥
+%varargin
+% {1} - savePath    string    å›¾åƒçš„å­˜å‚¨è·¯å¾„
+%é¢„å®šä¹‰
+fileName = 'testsetResult';
+%é¢„å¤„ç†è¾“å…¥
 errors = zeros(1,length(y(:,1)));
 set(0,'DefaultFigureVisible','on');
-figure
+fig = figure;
 for i=1:length(y(:,1))
-	%Ô¤´¦Àí
+	%é¢„å¤„ç†è¾“å…¥
 	y0 = y(i,:)';
-
-	%¼ÆËãÊä³öÏòÁ¿
+	
+	%è®¡ç®—è¾“å‡º
 	outputs = [ones(length(x(:,1)),1),x] * coefs(i,:)';
 	% only for wl
 	%outputs = outputs([1:14, 17:20]);
 	%y = y([1:14, 17:20]);
 
-	%¼ÆËãÎó²î
+	%è®¡ç®—è¯¯å·®
 	terror = abs(outputs - y0);
 
-	%¼ÆËã·µ»ØÖµ
+	%è®¡ç®—è¿”å›žå€¼
 	errors(i) = mean(terror);
 
-	%»æÍ¼
+	%ç»˜å›¾
 	subplot(length(y(:,1)),1,i);
-	plot1 = plot(outputs(:,1),'ko-'),
+	plot1 = plot(outputs(:,1),'ko-');
 	hold on,
 	plot2 = plot(y0(:,1),'ro-');
 	legend([plot1, plot2], {'BPest', 'BPreal'});
 	title(['r=',num2str(corr(outputs(:,1),y0(:,1))),' err=:', num2str(errors(i))]);
 	end
 
+	% å¦‚æžœä¼ å…¥äº†å›¾åƒå­˜å‚¨è·¯å¾„ï¼Œåˆ™ä¿å­˜æˆªå›¾åˆ°æ–‡ä»¶
+	if nargin>=4
+    	saveFigure(fig,varargin{1},fileName);
+    end
 
 set(0,'DefaultFigureVisible','off');
