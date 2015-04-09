@@ -16,7 +16,7 @@ function [coefs,errors]...
 % {1} - savePath    string    图像的存储路径
 
 %预定义
-fileName = 'trainsetResult';
+fileName = '0-trainset';
 %分配返回值空间
 coefs = zeros(length(BPs(:,1)), length(features(1,:)) + 1);
 errors=zeros(length(BPs(:,1)), 1);
@@ -46,7 +46,9 @@ for i=1:length(BPs(:,1))
     title(ttl);
 end
 % 如果传入了图像存储路径，则保存截图到文件
-if nargin>=3
-    saveFigure(fig,varargin{1},fileName);
-    end
+if nargin==3
+    saveFigure(fig,varargin{1},fileName);    
+elseif nargin==4
+    saveFigure(fig,varargin{1},varargin{2});    
+end
 %set(0,'DefaultFigureVisible','off');

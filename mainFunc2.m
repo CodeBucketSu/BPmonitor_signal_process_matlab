@@ -1,4 +1,4 @@
-function [BPs,PWFs] = mainFunc2(path, needPlot)
+function [BPs,PWFs] = mainFunc2(path, needPlot, selectedPWFNames)
 %   BPs：3   x   lenEvents   每次测量时间对应的血压，顺序为：平均压，收缩压，舒张压
 %   PWFs：k  x    lenEvents  k个特征（如心率，pwtt，k，prt）所对应的单次测量均值序列
 %% 只采用calibration的数据
