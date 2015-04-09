@@ -1,63 +1,63 @@
 function mainBatch2a()
 	close all
 
-	%%棰勫畾涔?
-	%閲囧彇銇壒寰佺偣妫?祴鏂瑰紡
+	%%预定义
+	%编码方式
+	encodeMethod = feature('DefaultCharacterSet');
+	feature('DefaultCharacterSet','UTF-8');
+	%采取の特征点检测方式
 	method = 'PEAK';
 	save('method.mat','method');
-	%閲囧彇銇剦鎼忔尝鐗瑰緛鐗瑰緛鍚?
-	selectedPWFNames = {'KVAL'};%,'PRT','DPW','DPWr','DiaAr','DNHr'
-	%缁樺浘銇瀹?
+	%采取の脉搏波特征特征名
+	selectedPWFNames = {'KVAL','PRT','DPW','DPWr','DiaAr','DNHr'};%
+	%绘图の设定
 	set(0,'DefaultFigureVisible','off');
 	needPlot = 0;
-	%瀛樺偍鍥剧墖銇枃浠跺す鍚嶇О
-	name = 'MultiLinearRegression';
-	%璇存槑鏂囦欢銇悕绉?
+	%存储图片の文件夹名称
+	%name = 'MultiLinearRegression';
+	%说明文件の名称
 	readme = 'readme.md';
-	%璇存槑鏂囦欢涓缁冮泦涓庢祴璇曢泦銇爣璁?
+	%说明文件中训练集与测试集の标记
 	setMarker = {'**trainset**','**testset**'};
 	trainSetSize = 3;
 	testSetSize = 2;
 	structItemNames = {'bp','pwf'};
-	%Map鍒濆鍖?
+	%Map初始化
 	featuresMap = containers.Map();
-	%%1.鑾峰彇璁粌闆嗕笌鏍锋湰闆嗚矾寰勯泦鍚?
-	%1.1閫夋嫨璁粌闆嗘暟鎹潵婧?
-	disp '璇烽?鎷╂爣瀹氭暟鎹泦鎵?湪鐨勬枃浠跺す闆嗗悎';
+	%%1.获取训练集与样本集路径集合
+	%1.1选择训练集数据来源
 	trainSetPaths = getAllDataPath(...
-		uipickfiles('REFilter','\$','FilterSpec',...
+		uipickfiles('REFilter','\$','Prompt','请选择标定数据集所在的文件夹集合','FilterSpec',...
 			'E:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\'));
 	if isempty(trainSetPaths)
 	    return
 	end
-	%1.2閫夋嫨娴嬭瘯闆嗘暟鎹潵婧?
-	disp '璇烽?鎷╂祴璇曟暟鎹泦鎵?湪鐨勬枃浠跺す闆嗗悎';
+	%1.2选择测试集数据来源
 	testSetPaths = getAllDataPath(...
-		uipickfiles('REFilter','\$','FilterSpec',fileparts(trainSetPaths{1})));
+		uipickfiles('REFilter','\$','Prompt','请选择测试数据集所在的文件夹集合','FilterSpec',fileparts(trainSetPaths{1})));
 	if isempty(testSetPaths)
 		return
 	end
-	%%2.鍚堝苟锛岀敓鎴愬叏闆?
+	%%2.合并，生成全集
 	fullPaths = merge2Paths(trainSetPaths,testSetPaths);
-	%%3.瀵规瘡涓矾寰勮绠楄鍘嬭剦鎼忔尝鐗瑰緛锛屽垎鍒搴斿瓨鍌ㄥ埌map鍐?
+	%%3.对每个路径计算血压脉搏波特征，分别对应存储到map内
 	for i=1:length(fullPaths)
 		[bps,pwfs] = mainFunc2(fullPaths{i},needPlot,selectedPWFNames);
 		featuresMap(fullPaths{i})= struct(structItemNames{1},{{bps}},structItemNames{2},{{pwfs}});
 		end
-	%%4.鑾峰彇鎵?湁鐨勮缁?鏍锋湰闆嗗悎锛屽垎鍒绠楁嫙鍚堢粨鏋滐紝骞跺瓨鍌?
+	%%4.获取所有的训练-样本集合，分别计算拟合结果，并存储
 	allTrainPaths = randomSelectPathModule(trainSetPaths,trainSetSize);
 	allTestPaths = randomSelectPathModule(testSetPaths,testSetSize);
-	%%4.1搴旂敤璁粌闆嗚矾寰勭敓鎴愬瓨鍌ㄥ浘鐗囦笌璇存槑鏂囨。鐨勮矾寰?
-		%瀛樺偍鎴浘銇牴璺緞
-	parentPath = fileparts(allTrainPaths{1}{1});
-	[parentPath dataProvider] = fileparts(parentPath);
-	parentPath = fullfile(parentPath,name);
+	%%4.1应用训练集路径生成存储图片与说明文档的路径
+		%存储截图の根路径
+	parentPath = uigetdir(fileparts(fileparts(allTrainPaths{1}{1})),...
+		'请选择存储数据的文件夹');
 	if ~exist(parentPath)
 		mkdir(parentPath);
 	end
 	for i=1:length(allTrainPaths)
 		trainPaths = allTrainPaths{i};
-		%鎷熷悎鎴浘銇瓙璺緞
+		%拟合截图の子路径
 		fullPath = fullfile(parentPath, ...
 			['trainSetSize-',num2str(trainSetSize),...	
 			' testSetSize-',num2str(testSetSize),...		 
@@ -65,7 +65,7 @@ function mainBatch2a()
 		if ~exist(fullPath)
 			mkdir(fullPath);
 		end
-		%%4.2鍐欏叆璇存槑鏂囦欢:璁粌闆?
+		%%4.2写入说明文件:训练集
 		if ~exist(fullfile(fullPath,readme))
 			fid = fopen(fullfile(fullPath,readme),'w+');
 			if fid~=-1
@@ -78,18 +78,18 @@ function mainBatch2a()
 				fclose(fid);
 			end
 		end
-		%%4.3鎷熷悎
-		%鏂囦欢鍛藉悕锛歵rainset
+		%%4.3拟合
+		%文件命名：trainset
 		[BPs,PWFs] = mergeDataInMap(trainPaths,featuresMap,structItemNames);		
 		[coefs,errors] = linearRegression(BPs,PWFs',fullPath);
 		for j=1:length(allTestPaths)
 			testPaths = allTestPaths{j};
-			%鍒ゆ柇涓よ?鏄惁鏈変氦闆?
+			%判断两者是否有交集
 			if hasRepeatElements(trainPaths,testPaths)
-				break;
+				continue;
 			end
-			%娴嬭瘯鎴浘銇瓙璺緞
-			%璁粌+鏍锋湰闆嗗ぇ灏?=鍏ㄩ泦澶у皬鏃讹紝鐩存帴瀛樺叆鎷熷悎鎴浘銇瓙璺緞
+			%测试截图の子路径
+			%训练+样本集大小>=全集大小时，直接存入拟合截图の子路径
 			% if trainSetSize+testSetSize >= length(fullPaths)
 			% 	savePath = fullPath;
 			% else
@@ -101,18 +101,20 @@ function mainBatch2a()
 			% 	end
 			% end
 			savePath = fullPath;
-			%%4.4鍐欏叆璇存槑鏂囦欢:娴嬭瘯闆?
+			%%4.4写入说明文件:测试集
 			name = [num2str(j),'-',num2str(i),'-',...
 				connectCellStrArray(selectedPWFNames),'-',num2str(getANum(savePath))];
 			writeAnItemInfoToReadMe(savePath,...
 				struct('name',{{name}},'paths',{testPaths}));
-			%4.5 娴嬭瘯
+			%4.5 测试
 			[testBPs,testPWFs] = mergeDataInMap(testPaths,featuresMap,structItemNames);
-			%%娴嬭瘯鎴浘鏂囦欢鍚嶅懡鍚嶈鍒欙細娴嬭瘯鏁版嵁缁勭紪鍙?鎷熷悎鏁版嵁缁勭紪鍙?浣跨敤鐨勭畻娉?鍞竴缂栧彿
+			%%测试截图文件名命名规则：测试数据组编号+拟合数据组编号+使用的算法+唯一编号
 			regressionErrors = evaluateRegressionEffect(testBPs,coefs,testPWFs'...
 				,savePath,name);
 		end
 	end
+	feature('DefaultCharacterSet',encodeMethod);
+	set(0,'DefaultFigureVisible','on');
 end
 
 function num = getANum(path)
@@ -136,10 +138,10 @@ function saveNumToMat(path,num)
 end
 
 function num = writeAnItemInfoToReadMe(path,infoStruct)
-	%% writeAnItemInfoToReadMe灏嗕竴涓浐瀹氱粨鏋勭殑struct淇℃伅鍐欏叆鍒皃ath涓嬬殑readme.md鍐?
-	%% infoStruct struct缁撴瀯
-	% ...name 鍥剧墖鏂囦欢鍚?
-	% ...paths cell鏁扮粍 鍖呭惈鐨勮矾寰?
+	%% writeAnItemInfoToReadMe将一个固定结构的struct信息写入到path下的readme.md内
+	%% infoStruct struct结构
+	% ...name 图片文件名
+	% ...paths cell数组 包含的路径
 
 	filename = 'readme.md';
 	fid = fopen(fullfile(path,filename),'a+');
@@ -157,18 +159,19 @@ function num = writeAnItemInfoToReadMe(path,infoStruct)
 end
 
 function connectedStr = connectCellStrArray(C2)
-	%% connectCellStrArray杩炴帴涓?釜cell array锛岃繑鍥炰竴涓瓧绗︿覆
+	%% connectCellStrArray连接一个cell array，返回一个字符串
 	C2(2,:) = {'-'};
 	C2{2,end} = '';
 	connectedStr = [C2{:}];
 end
 
 function b = hasRepeatElements(pathsa,pathsb)
-	%% hasRepeatElements鍒ゆ柇涓や釜瀛楃涓叉暟缁勪腑鏄惁瀛樺湪閲嶅
+	%% hasRepeatElements判断两个字符串数组中是否存在重复
 	for i=1:length(pathsb)
 		for j=1:length(pathsa)
 			if strcmp(pathsb{i},pathsa{j})==1
 				b = true;
+				return;
 			end
 		end;
 	end
@@ -180,7 +183,7 @@ function dirname = getParentFolderName(path)
 	end
 
 function [paths,hasRepeatElements] = merge2Paths(pathsa,pathsb)
-	%%merge2Paths铻嶅悎涓や釜cell瀛楃涓叉暟缁勶紝鐢熸垚涓嶅寘鍚噸澶嶅厓绱犵殑cell瀛楃涓叉暟缁?
+	%%merge2Paths融合两个cell字符串数组，生成不包含重复元素的cell字符串数组
 	paths = {};
 	for i=1:length(pathsb)
 		isRepeat = 0;
@@ -201,7 +204,7 @@ function [BPs,PWFs] = mergeDataInMap(paths,map,mapNames)
     BPs = [];
     PWFs = [];
     for i=1:length(paths)
-    	%姝ゅ闇?鎶婂瓧绗︿覆杞负缁撴瀯灞炴?
+    	%此处需要把字符串转为结构属性
     	bps = map(paths{i}).bp;
     	pwfs = map(paths{i}).pwf;
         bps = bps{:};
