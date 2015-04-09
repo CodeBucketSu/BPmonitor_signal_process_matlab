@@ -1,33 +1,65 @@
-% close all;
-%%Ô¤¶¨Òå:
-%²ÉÈ¡µÄÌØÕ÷µã¼ì²â·½Ê½
+close all
+
+%%é¢„å®šä¹‰
+%é‡‡å–ã®ç‰¹å¾ç‚¹æ£€æµ‹æ–¹å¼
 method = 'PEAK';
 save('method.mat','method');
-
+%ç»˜å›¾ã®è®¾å®š
 set(0,'DefaultFigureVisible','off');
 needPlot = 0;
+%å­˜å‚¨å›¾ç‰‡ã®æ–‡ä»¶å¤¹åç§°
+name = 'MultiLinearRegression';
+%è¯´æ˜æ–‡ä»¶ã®åç§°
+readme = 'readme.md';
+%è¯´æ˜æ–‡ä»¶ä¸­è®­ç»ƒé›†ä¸æµ‹è¯•é›†ã®æ ‡è®°
+setMarker = {'**trainset**','**testset**'};
 
-%Ñ¡Ôñ±ê¶¨Êı¾İ¼¯ËùÔÚµÄÎÄ¼ş¼Ğs
-disp 'ÇëÑ¡Ôñ±ê¶¨Êı¾İ¼¯ËùÔÚµÄÎÄ¼ş¼Ğs';
+disp 'è¯·é€‰æ‹©æ ‡å®šæ•°æ®é›†æ‰€åœ¨çš„æ–‡ä»¶å¤¹s';
 paths = uipickfiles('REFilter','\$','FilterSpec','E:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\');
 
 if isempty(path)
     return
 end
+
+%%å­˜å‚¨æˆªå›¾ã®è·¯å¾„
+parentPath = fileparts(paths{1});
+[parentPath dataProvider] = fileparts(parentPath);
+fullPath = fullfile(parentPath,name);
+if ~exist(fullPath)
+	mkdir(fullPath);
+end
+fullPath = fullfile(fullPath, ...
+	[datestr(now, 'yyyy-mm-dd-HH-MM-SS') '-trainset from' dataProvider])
+mkdir(fullPath);
+%%å†™å…¥è¯´æ˜æ–‡ä»¶ï¼šè®­ç»ƒé›†éƒ¨åˆ†
+fid = fopen(fullfile(fullPath,readme),'w+');
+if fid~=-1
+	fprintf(fid,'%s\r\n',setMarker{1});
+	for i=1:length(paths)
+		[~,childPath]=fileparts(paths{i});
+		fprintf(fid,'%d. %s\r\n',i,[dataProvider,'-',childPath])
+	end
+end
+
 [BPs,PWFs] = mainBatch2getSrcData(paths,needPlot);
-[coefs,errors] = linearRegression(BPs,PWFs');
-disp 'ÇëÑ¡Ôñ²âÊÔÊı¾İ¼¯ËùÔÚµÄÎÄ¼ş¼Ğs';
-paths = uipickfiles('REFilter','\$','FilterSpec','E:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\');
+[coefs,errors] = linearRegression(BPs,PWFs',fullPath);
+
+disp 'è¯·é€‰æ‹©æµ‹è¯•æ•°æ®é›†æ‰€åœ¨çš„æ–‡ä»¶å¤¹s';
+paths = uipickfiles('REFilter','\$','FilterSpec',fileparts(paths{1}));
 if isempty(path)
     return
 end
 [BPs,PWFs] = mainBatch2getSrcData(paths,needPlot);
-%% ÆÀ¹ÀĞ§¹û
-regressionErrors = zeros(length(BPs(:,1)),1);
-%%¶ÔÃ¿ÖÖÑªÑ¹Éú³ÉÎó²î
-for i=1:length(BPs(:,1))
-    regressionErrors(i) = evaluateRegressionEffect(BPs(i,:),coefs(i,:),PWFs');
-end
 
-save('errors.mat','regressionErrors');
-%
+%è¯„ä¼°æ•ˆæœ
+regressionErrors = evaluateRegressionEffect(BPs,coefs,PWFs',fullPath);
+%%å†™å…¥è¯´æ˜æ–‡ä»¶ï¼šæµ‹è¯•é›†éƒ¨åˆ†
+%è¿™é‡Œå‡è®¾è®­ç»ƒé›†ä¸æµ‹è¯•é›†æ•°æ®éƒ½æ˜¯æ¥è‡ªäºåŒä¸€ä¸ªdataProvider
+if fid~=-1
+	fprintf(fid,'%s\r\n',setMarker{2});
+	for i=1:length(paths)
+		[~,childPath]=fileparts(paths{i});
+		fprintf(fid,'%d. %s\r\n',i,[dataProvider,'-',childPath])
+	end
+	fclose(fid);
+end

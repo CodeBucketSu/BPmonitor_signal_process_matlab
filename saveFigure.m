@@ -1,5 +1,5 @@
 function saveFigure(figure, filePath, fileName)
-saveas(figure, [filePath, '\', fileName], 'fig');
+saveas(figure, fullfile(filePath,fileName), 'fig');
 set(figure, 'PaperPositionMode', 'auto');
-saveas(figure, [filePath, '\', fileName], 'jpg');
+saveas(figure, fullfile(filePath,fileName), 'jpg');
 end

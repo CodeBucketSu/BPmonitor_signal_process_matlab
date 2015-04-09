@@ -25,7 +25,7 @@ useElb = 1;
 %采用第n个PWTT
 selectedPwttNum = 5;
 %采用的脉搏波特征特征名
-selectedPWFNames = {'KVAL','PRT','DPW','DPWr','DiaAr','DNHr'};%{'KVAL','PRT','DPW','DPWr','DiaAr'};
+selectedPWFNames = {};%{'KVAL','PRT','DPW','DPWr','DiaAr','DNHr'};
 PWFs(1,:) = PWTTs(selectedPwttNum,:);   currRow = 1;
 % PWFs(currRow,:) = HRs;   currRow = 2;
 for j=1:length(selectedPWFNames)
