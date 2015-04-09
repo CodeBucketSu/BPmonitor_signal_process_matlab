@@ -40,8 +40,10 @@ for i=1:length(y(:,1))
 	end
 
 	% 如果传入了图像存储路径，则保存截图到文件
-	if nargin>=4
+	if nargin==4
     	saveFigure(fig,varargin{1},fileName);
-    end
+    elseif nargin==5
+	    saveFigure(fig,varargin{1},varargin{2});    
+	end
 
 %set(0,'DefaultFigureVisible','off');
