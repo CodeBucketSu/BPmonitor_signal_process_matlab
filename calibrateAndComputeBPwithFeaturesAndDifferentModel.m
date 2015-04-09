@@ -7,7 +7,7 @@ SVEs = zeros(12, length(formulas));
 CORRs = zeros(12, length(formulas));
 
 fig = figure('Name', [titleOfSignals, ' - Calibrate And Compute BP with different Features and models.'], ...
-    'OuterPos',  get(0, 'ScreenSize'));
+    'Position',  get(0, 'ScreenSize'));
 [row, col] = getSubplotsSize(size(features4cali, 1));
 for i = 1 : size(features4cali, 1)
     subplot(row, col, i);

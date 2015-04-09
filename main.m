@@ -1,5 +1,6 @@
 clc, clear, close all
-needPlot = 0;
+set(0,'DefaultFigureVisible', 'on');
+needPlot = 1;
 
 %%预定义:采取的特征点检测方式
 method = 'PEAK';
@@ -7,7 +8,7 @@ save('method.mat','method');
 
 %% 选取数据所在文件夹
 %[filePath] = uigetdir(['Y:\code\young\syl',...
-[filePath] = uigetdir('D:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young',... % for syl
+[filePath] = uigetdir('E:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young',... % for syl
     '请选择数据所在的文件夹：请确保该文件夹下存在名为“data”和“result”的文件夹！');
 filePathForDate = [filePath, '/data'];
 filePathForSave = [filePath, '/result'];
