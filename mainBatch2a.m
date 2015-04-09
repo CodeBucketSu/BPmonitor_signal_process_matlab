@@ -9,7 +9,7 @@ function mainBatch2a()
 	method = 'PEAK';
 	save('method.mat','method');
 	%采取の脉搏波特征特征名
-	selectedPWFNames = {'KVAL','PRT','DPW','DPWr','DiaAr','DNHr'};%
+	selectedPWFNames = {};%'KVAL','PRT','DPW','DPWr','DiaAr'
 	%绘图の设定
 	set(0,'DefaultFigureVisible','off');
 	needPlot = 0;

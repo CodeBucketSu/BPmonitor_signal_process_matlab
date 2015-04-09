@@ -33,7 +33,7 @@ for i = 1 : length(formulas)
     plot(estBPs(i, :), colorsdot{i + 1});
     
     % 构建标题
-    ttl{i} = ['M=', num2str(MEs(i, :),formatSpec), ', V=', num2str(SVEs(i, :),formatSpec), ',C=', num2str(CORRs(i, :),'%.3f')];
+    ttl{i} = ['M=', num2str(MEs(i, :),formatSpec), ', V=', num2str(SVEs(i, :),formatSpec), ', C=', num2str(CORRs(i, :),'%.3f')];
         
 end
 ttl{end + 1} = ['   meanCorrFeature2HR: ', num2str(corrPwttHr)];
