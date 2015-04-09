@@ -1,8 +1,8 @@
-function [BPs, PWFs] = mainBatch2getSrcData(paths,needPlot)
+function [BPs, PWFs] = mainBatch2getSrcData(paths,needPlot,selectedPWFNames)
         BPs = [];
         PWFs = [];
         for i=1:length(paths)
-             [bps,pwfs] = mainFunc2(paths{i},needPlot);
+             [bps,pwfs] = mainFunc2(paths{i},needPlot,selectedPWFNames);
             if isempty(BPs)
                  BPs = bps;
             else

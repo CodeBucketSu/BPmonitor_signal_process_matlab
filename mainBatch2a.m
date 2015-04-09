@@ -9,7 +9,7 @@ function mainBatch2a()
 	method = 'PEAK';
 	save('method.mat','method');
 	%采取の脉搏波特征特征名
-	selectedPWFNames = {'KVAL','PRT','DPW','DPWr','DiaAr','DNHr'};%
+	selectedPWFNames = {'KVAL','PRT','DPW','DPWr','DiaAr'};
 	%绘图の设定
 	set(0,'DefaultFigureVisible','off');
 	needPlot = 0;
@@ -38,23 +38,25 @@ function mainBatch2a()
 	if isempty(testSetPaths)
 		return
 	end
+	%1.3选择存储截图根路径
+	parentPath = uigetdir(fileparts(fileparts(testSetPaths{1})),...
+		'请选择存储数据的文件夹');
+	if ~exist(parentPath)
+		mkdir(parentPath);
+	end
 	%%2.合并，生成全集
 	fullPaths = merge2Paths(trainSetPaths,testSetPaths);
 	%%3.对每个路径计算血压脉搏波特征，分别对应存储到map内
 	for i=1:length(fullPaths)
 		[bps,pwfs] = mainFunc2(fullPaths{i},needPlot,selectedPWFNames);
+		% bps = 0;
+		% pwfs = 0;
 		featuresMap(fullPaths{i})= struct(structItemNames{1},{{bps}},structItemNames{2},{{pwfs}});
 		end
 	%%4.获取所有的训练-样本集合，分别计算拟合结果，并存储
 	allTrainPaths = randomSelectPathModule(trainSetPaths,trainSetSize);
 	allTestPaths = randomSelectPathModule(testSetPaths,testSetSize);
 	%%4.1应用训练集路径生成存储图片与说明文档的路径
-		%存储截图の根路径
-	parentPath = uigetdir(fileparts(fileparts(allTrainPaths{1}{1})),...
-		'请选择存储数据的文件夹');
-	if ~exist(parentPath)
-		mkdir(parentPath);
-	end
 	for i=1:length(allTrainPaths)
 		trainPaths = allTrainPaths{i};
 		%拟合截图の子路径
@@ -66,22 +68,26 @@ function mainBatch2a()
 			mkdir(fullPath);
 		end
 		%%4.2写入说明文件:训练集
-		if ~exist(fullfile(fullPath,readme))
-			fid = fopen(fullfile(fullPath,readme),'w+');
-			if fid~=-1
-				fprintf(fid,'%s\r\n',setMarker{1});
-				for i=1:length(trainPaths)
-					[~,childPath]=fileparts(trainPaths{i});
-					fprintf(fid,'%d. %s\r\n',i,trainPaths{i})
-				end
-				fprintf(fid,'%s\r\n',setMarker{2});
-				fclose(fid);
+		%%测试截图文件名命名规则：拟合数据组编号+使用的算法+唯一编号
+		name = ['Trainset-',num2str(i),'-',...
+				connectCellStrArray(selectedPWFNames),'-',num2str(getANum(fullPath))];			
+
+		fid = fopen(fullfile(fullPath,readme),'a+');
+		if fid~=-1
+			fprintf(fid,'%s\r\n',setMarker{1});
+			fprintf(fid,'%s\r\n',name);
+			for i=1:length(trainPaths)
+				[~,childPath]=fileparts(trainPaths{i});
+				fprintf(fid,'%d. %s\r\n',i,trainPaths{i})
 			end
+			fprintf(fid,'%s\r\n',setMarker{2});
+			fclose(fid);
 		end
+
 		%%4.3拟合
-		%文件命名：trainset
 		[BPs,PWFs] = mergeDataInMap(trainPaths,featuresMap,structItemNames);		
-		[coefs,errors] = linearRegression(BPs,PWFs',fullPath);
+		[coefs,errors] = linearRegression(BPs,PWFs',fullPath,...
+			name);
 		for j=1:length(allTestPaths)
 			testPaths = allTestPaths{j};
 			%判断两者是否有交集
@@ -102,13 +108,13 @@ function mainBatch2a()
 			% end
 			savePath = fullPath;
 			%%4.4写入说明文件:测试集
-			name = [num2str(j),'-',num2str(i),'-',...
+			name = ['Testset-',num2str(i),'-',num2str(j),'-',...
 				connectCellStrArray(selectedPWFNames),'-',num2str(getANum(savePath))];
 			writeAnItemInfoToReadMe(savePath,...
 				struct('name',{{name}},'paths',{testPaths}));
 			%4.5 测试
 			[testBPs,testPWFs] = mergeDataInMap(testPaths,featuresMap,structItemNames);
-			%%测试截图文件名命名规则：测试数据组编号+拟合数据组编号+使用的算法+唯一编号
+			%%测试截图文件名命名规则：拟合数据组编号+测试数据组编号+使用的算法+唯一编号
 			regressionErrors = evaluateRegressionEffect(testBPs,coefs,testPWFs'...
 				,savePath,name);
 		end

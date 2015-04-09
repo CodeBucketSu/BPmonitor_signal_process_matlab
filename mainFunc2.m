@@ -16,16 +16,15 @@ end
     = computeAll(filePathForData, fileNames, needPlot, '标定数据');
 
 %% 返回
-PWFs = selectPWFs(HRs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames);
+PWFs = selectPWFs(HRs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames,selectedPWFNames);
 end
 
-function [PWFs] = selectPWFs(HRs, PWTTs, PWFs_elb, PWFs_wrst,PWFnames)
+function [PWFs] = selectPWFs(HRs, PWTTs, PWFs_elb, PWFs_wrst,PWFnames,selectedPWFNames)
 %采用肘部脉搏波特征
 useElb = 1;
 %采用第n个PWTT
 selectedPwttNum = 5;
 %采用的脉搏波特征特征名
-selectedPWFNames = {'KVAL','PRT','DPW','DPWr','DiaAr','DNHr'};%{'KVAL','PRT','DPW','DPWr','DiaAr'};
 PWFs(1,:) = PWTTs(selectedPwttNum,:);   currRow = 1;
 % PWFs(currRow,:) = HRs;   currRow = 2;
 for j=1:length(selectedPWFNames)

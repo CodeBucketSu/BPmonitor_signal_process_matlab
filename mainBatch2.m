@@ -13,6 +13,8 @@ name = 'MultiLinearRegression';
 readme = 'readme.md';
 %说明文件中训练集与测试集の标记
 setMarker = {'**trainset**','**testset**'};
+%采取の脉搏波特征特征名
+selectedPWFNames = {'KVAL','PRT','DPW','DPWr','DiaAr'};
 
 disp '请选择标定数据集所在的文件夹s';
 paths = uipickfiles('REFilter','\$','FilterSpec','E:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\');
@@ -41,7 +43,7 @@ if fid~=-1
 	end
 end
 
-[BPs,PWFs] = mainBatch2getSrcData(paths,needPlot);
+[BPs,PWFs] = mainBatch2getSrcData(paths,needPlot,selectedPWFNames);
 [coefs,errors] = linearRegression(BPs,PWFs',fullPath);
 
 disp '请选择测试数据集所在的文件夹s';
@@ -49,7 +51,7 @@ paths = uipickfiles('REFilter','\$','FilterSpec',fileparts(paths{1}));
 if isempty(path)
     return
 end
-[BPs,PWFs] = mainBatch2getSrcData(paths,needPlot);
+[BPs,PWFs] = mainBatch2getSrcData(paths,needPlot,selectedPWFNames);
 
 %评估效果
 regressionErrors = evaluateRegressionEffect(BPs,coefs,PWFs',fullPath);
