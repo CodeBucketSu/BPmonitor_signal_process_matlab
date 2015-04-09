@@ -12,7 +12,7 @@ function [errors] = evaluateRegressionEffect(y,coefs,x,varargin)
 fileName = 'testsetResult';
 %预处理输入
 errors = zeros(1,length(y(:,1)));
-set(0,'DefaultFigureVisible','on');
+%set(0,'DefaultFigureVisible','on');
 fig = figure;
 for i=1:length(y(:,1))
 	%预处理输入
@@ -44,4 +44,4 @@ for i=1:length(y(:,1))
     	saveFigure(fig,varargin{1},fileName);
     end
 
-set(0,'DefaultFigureVisible','off');
+%set(0,'DefaultFigureVisible','off');

@@ -1,35 +1,35 @@
 function [coefs,errors]...
     =linearRegression(BPs,features,varargin)
-%linearRegressionå‡½æ•°ç”¨äºŽè®¡ç®—å¤šå…ƒçº¿æ€§æ‹Ÿåˆå¹³å‡åŽ‹ï¼Œæ”¶ç¼©åŽ‹ä¸Žèˆ’å¼ åŽ‹çš„æ‹Ÿåˆç³»æ•°
-%æ‹Ÿåˆå…¬å¼ä¸º bp = a*pwtt + b*k +c*prt+d*...
+%linearRegressionº¯ÊýÓÃÓÚ¼ÆËã¶àÔªÏßÐÔÄâºÏÆ½¾ùÑ¹£¬ÊÕËõÑ¹ÓëÊæÕÅÑ¹µÄÄâºÏÏµÊý
+%ÄâºÏ¹«Ê½Îª bp = a*pwtt + b*k +c*prt+d*...
 %OUTPUT
-%coefs    k*mçŸ©é˜µ   [[a_mbp,b_mbp,c_mbp,...];[a_dbp,b_dbp,c_dbp,...];...]
-%   å¯¹åº”äºŽkç§BPçš„æ‹Ÿåˆç³»æ•°åºåˆ—ã€‚ç”±äºŽæ€»å…±æœ‰3ç§BP,å› æ­¤kå°äºŽç­‰äºŽ3.må¯¹åº”äºŽmç§ç‰¹å¾
-%errors    k*1çŸ©é˜µ    å¯¹åº”äºŽkç§BPçš„æ®‹å·®åºåˆ—ã€‚errorå€¼è¶Šå¤§ï¼Œè¯´æ˜Žæ‹Ÿåˆæ•ˆæžœè¶Šå·®
+%coefs    k*m¾ØÕó   [[a_mbp,b_mbp,c_mbp,...];[a_dbp,b_dbp,c_dbp,...];...]
+%   ¶ÔÓ¦ÓÚkÖÖBPµÄÄâºÏÏµÊýÐòÁÐ¡£ÓÉÓÚ×Ü¹²ÓÐ3ÖÖBP,Òò´ËkÐ¡ÓÚµÈÓÚ3.m¶ÔÓ¦ÓÚmÖÖÌØÕ÷
+%errors    k*1¾ØÕó    ¶ÔÓ¦ÓÚkÖÖBPµÄ²Ð²îÐòÁÐ¡£errorÖµÔ½´ó£¬ËµÃ÷ÄâºÏÐ§¹ûÔ½²î
 
 %INPUT
-%BPs    k*nçŸ©é˜µ    [[mbp_1,mbp_2,...mbp_n];[dbp_1,dbp_2,...dbp_n];...]næ¬¡æµ‹é‡å¾—åˆ°çš„kç§BPåºåˆ—
-%features    n*mçŸ©é˜µ
+%BPs    k*n¾ØÕó    [[mbp_1,mbp_2,...mbp_n];[dbp_1,dbp_2,...dbp_n];...]n´Î²âÁ¿µÃµ½µÄkÖÖBPÐòÁÐ
+%features    n*m¾ØÕó
 %   [[pwtt_1,pwtt_2,...pwtt_n]',[k_1,k_2,...k_n]',[prt_1,prt_2,...prt_n]...]
-%    næ¬¡æµ‹é‡å¾—åˆ°çš„mç§ç‰¹å¾åºåˆ—ã€‚æ¯ç§ç‰¹å¾åªæœ‰nç»´çš„åŽŸå› æ˜¯å¯¹æ¯ç§ç‰¹å¾è€Œè¨€ï¼Œåœ¨æ¯æ¬¡è¡€åŽ‹æµ‹é‡è¿‡ç¨‹ä¸­æµ‹å¾—äº†pä¸ªå€¼ï¼Œç„¶åŽå¯¹è¿™pä¸ªå€¼æ±‚å‡å€¼å¾—åˆ°nä¸ªå¹³å‡å€¼ï¼Œåˆ†åˆ«å¯¹åº”äºŽæ¯æ¬¡æµ‹é‡
+%    n´Î²âÁ¿µÃµ½µÄmÖÖÌØÕ÷ÐòÁÐ¡£Ã¿ÖÖÌØÕ÷Ö»ÓÐnÎ¬µÄÔ­ÒòÊÇ¶ÔÃ¿ÖÖÌØÕ÷¶øÑÔ£¬ÔÚÃ¿´ÎÑªÑ¹²âÁ¿¹ý³ÌÖÐ²âµÃÁËp¸öÖµ£¬È»ºó¶ÔÕâp¸öÖµÇó¾ùÖµµÃµ½n¸öÆ½¾ùÖµ£¬·Ö±ð¶ÔÓ¦ÓÚÃ¿´Î²âÁ¿
 %varargin
-% {1} - savePath    string    å›¾åƒçš„å­˜å‚¨è·¯å¾„
+% {1} - savePath    string    Í¼ÏñµÄ´æ´¢Â·¾¶
 
-%é¢„å®šä¹‰
+%Ô¤¶¨Òå
 fileName = 'trainsetResult';
-%åˆ†é…è¿”å›žå€¼ç©ºé—´
+%·ÖÅä·µ»ØÖµ¿Õ¼ä
 coefs = zeros(length(BPs(:,1)), length(features(1,:)) + 1);
 errors=zeros(length(BPs(:,1)), 1);
-%å®Œæˆæ‹Ÿåˆ
+%Íê³ÉÄâºÏ
 for i=1:length(BPs(:,1))
     [coef,~,error] = regress(BPs(i,:)',[ones(length(features(:,1)),1),features]);
     coefs(i,:) = coef';
     errors(i) = mean(abs(error));
 end
-%ç»˜åˆ¶æ›²çº¿
-%n*kçŸ©é˜µï¼Œnæ¬¡æ‹Ÿåˆå¾—åˆ°çš„kç§è¡€åŽ‹å€¼
+%»æÖÆÇúÏß
+%n*k¾ØÕó£¬n´ÎÄâºÏµÃµ½µÄkÖÖÑªÑ¹Öµ
 BPRegression = [ones(length(features(:,1)),1),features]*coefs';
-set(0,'DefaultFigureVisible','on');
+%set(0,'DefaultFigureVisible','on');
 fig = figure;
 for i=1:length(BPs(:,1))
 	subplot(length(BPs(:,1)),1,i)
@@ -45,8 +45,8 @@ for i=1:length(BPs(:,1))
     ttl{end + 1} = strCoefs;
     title(ttl);
 end
-% å¦‚æžœä¼ å…¥äº†å›¾åƒå­˜å‚¨è·¯å¾„ï¼Œåˆ™ä¿å­˜æˆªå›¾åˆ°æ–‡ä»¶
+% Èç¹û´«ÈëÁËÍ¼Ïñ´æ´¢Â·¾¶£¬Ôò±£´æ½ØÍ¼µ½ÎÄ¼þ
 if nargin>=3
     saveFigure(fig,varargin{1},fileName);
     end
-set(0,'DefaultFigureVisible','off');
+%set(0,'DefaultFigureVisible','off');

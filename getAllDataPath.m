@@ -1,5 +1,9 @@
-function paths = getAllDataPath(path)	
-	paths = recursivelySearchPath(path,0);
+function paths = getAllDataPath(pathcell)	
+	paths = {};
+	for i=1:length(pathcell)
+		tPath = recursivelySearchPath(generateResult(pathcell{i}),0);
+		paths = {paths{:},tPath{:}};
+	end
 end
 
 function [paths,isPathWhatWeWant] = recursivelySearchPath(pathStruct,depth)
