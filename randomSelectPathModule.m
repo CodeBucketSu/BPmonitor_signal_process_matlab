@@ -1,5 +1,6 @@
 function elements = randomSelectPathModule(cellArray,num)
 	%%randomSelectPathModule返回所有从string数组中挑选出num个string的组合
+	%虽然名字包含random，但各个组合的顺序是确定的。
 	if num>=length(cellArray)
 		%只有一种组合
 		elements={cellArray};

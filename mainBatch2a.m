@@ -56,9 +56,9 @@ function mainBatch2a()
 	end
 	for i=1:length(allTrainPaths)
 		trainPaths = allTrainPaths{i};
-		%存储截图の子路径
+		%拟合截图の子路径
 		fullPath = fullfile(parentPath, ...
-			[datestr(now, 'yyyy-mm-dd-HH-MM-SS') '-trainset from ' dataProvider])
+			[datestr(now, 'yyyy-mm-dd-HH-MM-SS') '-trainset from ' dataProvider]);
 		mkdir(fullPath);
 		%%4.2写入说明文件:训练集
 		fid = fopen(fullfile(fullPath,readme),'w+');
@@ -68,26 +68,39 @@ function mainBatch2a()
 				[~,childPath]=fileparts(trainPaths{i});
 				fprintf(fid,'%d. %s\r\n',i,[dataProvider,'-',childPath])
 			end
-			fprintf(fid,'%s\r\n',setMarker{2});
+			fclose(fid);
 		end
 		%%4.3拟合
 		[BPs,PWFs] = mergeDataInMap(trainPaths,featuresMap,structItemNames);		
 		[coefs,errors] = linearRegression(BPs,PWFs',fullPath);
 		for j=1:length(allTestPaths)
 			testPaths = allTestPaths{j};
+			%测试截图の子路径
+			savePath = fullfile(fullPath, ...
+				[datestr(now, 'yyyy-mm-dd-HH-MM-SS') '-testset from '...
+				 getParentFolderName(testPaths{1})]);
+			if ~exist(savePath)
+				mkdir(savePath);
+			end
 			%%4.4写入说明文件:测试集
+			fid = fopen(fullfile(savePath,readme),'w+');
 			if fid~=1
+				fprintf(fid,'%s\r\n',setMarker{2});
 				for i=1:length(testPaths)
 					[~,childPath]=fileparts(testPaths{i});
-					fprintf(fid,'%d. %s\r\n',i,[dataProvider,'-',childPath])
+					fprintf(fid,'%d. %s\r\n',i,[getParentFolderName(testPaths{i}),'-',childPath])
 				end
 			end
 			%4.5 测试
 			[testBPs,testPWFs] = mergeDataInMap(testPaths,featuresMap,structItemNames);
-			regressionErrors = evaluateRegressionEffect(testBPs,coefs,testPWFs',fullPath);
+			regressionErrors = evaluateRegressionEffect(testBPs,coefs,testPWFs',savePath);
 		end
 		end
 end
+
+function dirname = getParentFolderName(path)
+	[~,dirname] = fileparts(fileparts(path));
+	end
 
 function paths = merge2Paths(pathsa,pathsb)
 	%%merge2Paths融合两个cell字符串数组，生成一个不重复的cell字符串数组
