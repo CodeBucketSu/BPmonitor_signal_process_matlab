@@ -9,9 +9,19 @@ function mainBatch2a()
 	method = 'PEAK';
 	save('method.mat','method');
 	%采取の脉搏波特征特征名
-	selectedPWFNames = {};%'KVAL','PRT','DPW','DPWr','DiaAr'
+	%selectedPWFNames = {};%'KVAL','PRT','DPW','DPWr','DiaAr'
+    cellOfSelectedPWFNames = {{};...
+        {'PRT','DPWr'};...
+        {'PRT','DPW'};...
+        {'PRT','DiaAr'};...
+        {'PRT','DPW','DPWr'};...
+        {'PRT','DPW','DPWr','DiaAr'};...
+        {'PDPT','PRT','DPW','DPWr','DiaAr'};...
+        {'KVAL','PRT','DPW','DPWr','DiaAr'};...
+        {'PRT','DPW','DPWr','DiaAr', 'DNHr'};...
+        };
 	%绘图の设定
-	set(0,'DefaultFigureVisible','off');
+	set(0,'DefaultFigureVisible','on');
 	needPlot = 0;
 	%存储图片の文件夹名称
 	%name = 'MultiLinearRegression';
@@ -38,24 +48,40 @@ function mainBatch2a()
 	if isempty(testSetPaths)
 		return
 	end
-	%%2.合并，生成全集
-	fullPaths = merge2Paths(trainSetPaths,testSetPaths);
-	%%3.对每个路径计算血压脉搏波特征，分别对应存储到map内
-	for i=1:length(fullPaths)
-		[bps,pwfs] = mainFunc2(fullPaths{i},needPlot,selectedPWFNames);
-		featuresMap(fullPaths{i})= struct(structItemNames{1},{{bps}},structItemNames{2},{{pwfs}});
-		end
-	%%4.获取所有的训练-样本集合，分别计算拟合结果，并存储
-	allTrainPaths = randomSelectPathModule(trainSetPaths,trainSetSize);
-	allTestPaths = randomSelectPathModule(testSetPaths,testSetSize);
-	%%4.1应用训练集路径生成存储图片与说明文档的路径
-		%存储截图の根路径
-	parentPath = uigetdir(fileparts(fileparts(allTrainPaths{1}{1})),...
+	%1.3选择存储截图根路径
+	parentPath = uigetdir(fileparts(fileparts(testSetPaths{1})),...
 		'请选择存储数据的文件夹');
 	if ~exist(parentPath)
 		mkdir(parentPath);
 	end
-	for i=1:length(allTrainPaths)
+	%%2.合并，生成全集
+	fullPaths = merge2Paths(trainSetPaths,testSetPaths);
+	%%3.对每个路径计算血压脉搏波特征，分别对应存储到map内
+    HRs = cell(length(fullPaths));
+    BPs = cell(length(fullPaths));
+    PWTTs = cell(length(fullPaths));
+    PWFs_elb = cell(length(fullPaths));
+    PWFs_wrst = cell(length(fullPaths));
+    PWFnames = cell(length(fullPaths));
+
+	for i=1:length(fullPaths)
+		[HRs{i}, BPs{i}, PWTTs{i}, PWFs_elb{i}, PWFs_wrst{i}, PWFnames{i}] = mainFunc2(fullPaths{i},needPlot);
+		% bps = 0;
+		% pwfs = 0;
+		end
+	%%4.获取所有的训练-样本集合，分别计算拟合结果，并存储
+	allTrainPaths = randomSelectPathModule(trainSetPaths,trainSetSize);
+	allTestPaths = randomSelectPathModule(testSetPaths,testSetSize);
+    
+    for cnt = 1 : length(cellOfSelectedPWFNames)        
+        selectedPWFNames = cellOfSelectedPWFNames{cnt};
+        for i=1:length(fullPaths)
+            featuresMap(fullPaths{i})= struct(structItemNames{1},{{BPs{i}}},structItemNames{2},...
+                {{selectPWFs(HRs{i}, PWTTs{i}, PWFs_elb{i}, PWFs_wrst{i}, PWFnames{i},selectedPWFNames)}});
+        end
+        
+        %%4.1应用训练集路径生成存储图片与说明文档的路径
+        for i=1:length(allTrainPaths)
 		trainPaths = allTrainPaths{i};
 		%拟合截图の子路径
 		fullPath = fullfile(parentPath, ...
@@ -66,22 +92,26 @@ function mainBatch2a()
 			mkdir(fullPath);
 		end
 		%%4.2写入说明文件:训练集
-		if ~exist(fullfile(fullPath,readme))
-			fid = fopen(fullfile(fullPath,readme),'w+');
-			if fid~=-1
-				fprintf(fid,'%s\r\n',setMarker{1});
-				for i=1:length(trainPaths)
-					[~,childPath]=fileparts(trainPaths{i});
-					fprintf(fid,'%d. %s\r\n',i,trainPaths{i})
-				end
-				fprintf(fid,'%s\r\n',setMarker{2});
-				fclose(fid);
+		%%测试截图文件名命名规则：拟合数据组编号+使用的算法+唯一编号
+		name = ['Trainset-',num2str(i),'-',...
+				connectCellStrArray(selectedPWFNames),'-',num2str(getANum(fullPath))];			
+
+		fid = fopen(fullfile(fullPath,readme),'a+');
+		if fid~=-1
+			fprintf(fid,'%s\r\n',setMarker{1});
+			fprintf(fid,'%s\r\n',name);
+			for i=1:length(trainPaths)
+				[~,childPath]=fileparts(trainPaths{i});
+				fprintf(fid,'%d. %s\r\n',i,trainPaths{i})
 			end
+			fprintf(fid,'%s\r\n',setMarker{2});
+			fclose(fid);
 		end
+
 		%%4.3拟合
-		%文件命名：trainset
-		[BPs,PWFs] = mergeDataInMap(trainPaths,featuresMap,structItemNames);		
-		[coefs,errors] = linearRegression(BPs,PWFs',fullPath);
+		[bps,PWFs] = mergeDataInMap(trainPaths,featuresMap,structItemNames);		
+		[coefs,errors] = linearRegression(bps,PWFs',fullPath,...
+			name);
 		for j=1:length(allTestPaths)
 			testPaths = allTestPaths{j};
 			%判断两者是否有交集
@@ -102,17 +132,18 @@ function mainBatch2a()
 			% end
 			savePath = fullPath;
 			%%4.4写入说明文件:测试集
-			name = [num2str(j),'-',num2str(i),'-',...
+			name = ['Testset-',num2str(i),'-',num2str(j),'-',...
 				connectCellStrArray(selectedPWFNames),'-',num2str(getANum(savePath))];
 			writeAnItemInfoToReadMe(savePath,...
 				struct('name',{{name}},'paths',{testPaths}));
 			%4.5 测试
 			[testBPs,testPWFs] = mergeDataInMap(testPaths,featuresMap,structItemNames);
-			%%测试截图文件名命名规则：测试数据组编号+拟合数据组编号+使用的算法+唯一编号
+			%%测试截图文件名命名规则：拟合数据组编号+测试数据组编号+使用的算法+唯一编号
 			regressionErrors = evaluateRegressionEffect(testBPs,coefs,testPWFs'...
 				,savePath,name);
 		end
-	end
+        end
+    end
 	feature('DefaultCharacterSet',encodeMethod);
 	set(0,'DefaultFigureVisible','on');
 end
@@ -220,4 +251,27 @@ function [BPs,PWFs] = mergeDataInMap(paths,map,mapNames)
             PWFs=[PWFs,pwfs];
         end
     end
+end
+
+function [PWFs] = selectPWFs(HRs, PWTTs, PWFs_elb, PWFs_wrst,PWFnames,selectedPWFNames)
+%采用肘部脉搏波特征
+useElb = 1;
+%采用第n个PWTT
+selectedPwttNum = 5;
+%采用的脉搏波特征特征名
+PWFs(1,:) = PWTTs(selectedPwttNum,:);   currRow = 1;
+% PWFs(currRow,:) = HRs;   currRow = 2;
+for j=1:length(selectedPWFNames)
+        for i=1:length(PWFnames)
+                if strcmp(PWFnames{i},selectedPWFNames{j})
+                    if useElb == 1
+                        PWFs(currRow+j,:) = PWFs_elb(i,:);
+                    else
+                        PWFs(currRow+j,:) = PWFs_wrst(i,:);
+                    end
+                    break;
+                end
+        end
+end
+    
 end

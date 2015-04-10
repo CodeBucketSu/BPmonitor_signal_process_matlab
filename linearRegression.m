@@ -14,7 +14,7 @@ function [coefs,errors]...
 %    n次测量得到的m种特征序列。每种特征只有n维的原因是对每种特征而言，在每次血压测量过程中测得了p个值，然后对这p个值求均值得到n个平均值，分别对应于每次测量
 %varargin
 % {1} - savePath    string    图像的存储路径
-
+close all;
 %预定义
 fileName = '0-trainset';
 %分配返回值空间

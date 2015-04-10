@@ -1,33 +1,34 @@
 function [errors] = evaluateRegressionEffect(y,coefs,x,varargin)
-%evaluateRegressionEffect用于评估k组拟合系数的效果。默认情况下认为这些系数都是线性拟合系数。
+%evaluateRegressionEffect用于评估k组拟合系数的效果。默认情况下认为这些系数都是线�?拟合系数�?
 %OUTPUT
-%errors 1*k 对于coefs进行评估得到的k个平均误差 
+%errors 1*k 对于coefs进行评估得到的k个平均误�?
 %INPUT
-%y    n*1矩阵    n组输出结果值
-%coefs    k*m矩阵    k组维数为m的拟合系数
-%x    n*m矩阵    n组维数为m的输入
+%y    n*1矩阵    n组输出结果�?
+%coefs    k*m矩阵    k组维数为m的拟合系�?
+%x    n*m矩阵    n组维数为m的输�?
 %varargin
-% {1} - savePath    string    图像的存储路径
-%预定义
+% {1} - savePath    string    图像的存储路�?
+%预定�?
+close all;
 fileName = 'testsetResult';
-%预处理输入
+%预处理输�?
 errors = zeros(1,length(y(:,1)));
 %set(0,'DefaultFigureVisible','on');
 fig = figure;
 for i=1:length(y(:,1))
-	%预处理输入
+	%预处理输�?
 	y0 = y(i,:)';
 	
 	%计算输出
 	outputs = [ones(length(x(:,1)),1),x] * coefs(i,:)';
 	% only for wl
-	%outputs = outputs([1:14, 17:20]);
-	%y = y([1:14, 17:20]);
+% 	outputs = outputs([1:14, 17:20]);
+% 	y0 = y0([1:14, 17:20]);
 
 	%计算误差
 	terror = abs(outputs - y0);
 
-	%计算返回值
+	%计算返回�?
 	errors(i) = mean(terror);
 
 	%绘图
