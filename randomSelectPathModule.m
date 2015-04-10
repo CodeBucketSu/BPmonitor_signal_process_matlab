@@ -1,8 +1,8 @@
 function elements = randomSelectPathModule(cellArray,num)
-	%%randomSelectPathModuleè¿”å›æ‰€æœ‰ä»stringæ•°ç»„ä¸­æŒ‘é€‰å‡ºnumä¸ªstringçš„ç»„åˆ
-	%è™½ç„¶åå­—åŒ…å«randomï¼Œä½†å„ä¸ªç»„åˆçš„é¡ºåºæ˜¯ç¡®å®šçš„ã€‚
+	%%randomSelectPathModule·µ»ØËùÓĞ´ÓstringÊı×éÖĞÌôÑ¡³önum¸östringµÄ×éºÏ
+	%ËäÈ»Ãû×Ö°üº¬random£¬µ«¸÷¸ö×éºÏµÄË³ĞòÊÇÈ·¶¨µÄ¡£
 	if num>=length(cellArray)
-		%åªæœ‰ä¸€ç§ç»„åˆ
+		%Ö»ÓĞÒ»ÖÖ×éºÏ
 		elements={cellArray};
 	else
 		elements = {};

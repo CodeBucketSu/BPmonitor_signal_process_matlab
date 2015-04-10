@@ -3,8 +3,8 @@ function mainBatch2a()
 
 	%%预定义
 	%编码方式
-	encodeMethod = feature('DefaultCharacterSet');
-	feature('DefaultCharacterSet','UTF-8');
+	% encodeMethod = feature('DefaultCharacterSet');
+	% feature('DefaultCharacterSet','UTF-8');
 	%采取の特征点检测方式
 	method = 'PEAK';
 	save('method.mat','method');
@@ -21,14 +21,14 @@ function mainBatch2a()
         {'PRT','DPW','DPWr','DiaAr', 'DNHr'};...
         };
 	%绘图の设定
-	set(0,'DefaultFigureVisible','on');
+	set(0,'DefaultFigureVisible','off');
 	needPlot = 0;
 	%存储图片の文件夹名称
 	%name = 'MultiLinearRegression';
 	%说明文件の名称
 	readme = 'readme.md';
 	%说明文件中训练集与测试集の标记
-	setMarker = {'**trainset**','**testset**'};
+	setMarker = {'***********trainset***********','***********testset***********'};
 	trainSetSize = 3;
 	testSetSize = 2;
 	structItemNames = {'bp','pwf'};
@@ -98,20 +98,19 @@ function mainBatch2a()
 
 		fid = fopen(fullfile(fullPath,readme),'a+');
 		if fid~=-1
-			fprintf(fid,'%s\r\n',setMarker{1});
+			fprintf(fid,'\r\n\r\n%s\r\n',setMarker{1});
 			fprintf(fid,'%s\r\n',name);
 			for i=1:length(trainPaths)
-				[~,childPath]=fileparts(trainPaths{i});
-				fprintf(fid,'%d. %s\r\n',i,trainPaths{i})
+				fprintf(fid,'%d. %s\r\n',i,getShortenPath(trainPaths{i}))
 			end
 			fprintf(fid,'%s\r\n',setMarker{2});
 			fclose(fid);
 		end
-
 		%%4.3拟合
 		[bps,PWFs] = mergeDataInMap(trainPaths,featuresMap,structItemNames);		
-		[coefs,errors] = linearRegression(bps,PWFs',fullPath,...
+		[coefs,errors,corrs] = linearRegression(bps,PWFs',fullPath,...
 			name);
+		saveDataToMat(fullPath,name,coefs,errors,corrs);
 		for j=1:length(allTestPaths)
 			testPaths = allTestPaths{j};
 			%判断两者是否有交集
@@ -139,14 +138,60 @@ function mainBatch2a()
 			%4.5 测试
 			[testBPs,testPWFs] = mergeDataInMap(testPaths,featuresMap,structItemNames);
 			%%测试截图文件名命名规则：拟合数据组编号+测试数据组编号+使用的算法+唯一编号
-			regressionErrors = evaluateRegressionEffect(testBPs,coefs,testPWFs'...
+			[regressionErrors,regressionCorrs] = evaluateRegressionEffect(testBPs,coefs,testPWFs'...
 				,savePath,name);
+			saveDataToMat(savePath,name,coefs,regressionErrors,regressionCorrs);
+
 		end
         end
     end
-	feature('DefaultCharacterSet',encodeMethod);
+	% feature('DefaultCharacterSet',encodeMethod);
 	set(0,'DefaultFigureVisible','on');
 end
+
+function shortPath = getShortenPath(fullpath)
+	[parentPath,dirname] = fileparts(fullpath);
+	[~,dataProvider] = fileparts(parentPath);
+	shortPath = fullfile(dataProvider,dirname);
+end
+
+function saveDataToMat(matpath,name,coefs,meanerrors,corrs)
+	%% saveDataToMat将拟合或测试结果写入到一个mat文件内
+	% INPUT
+	% name char类型 拟合或测试文件名
+	% coefs n维向量 拟合系数
+	% meanerrors 3维向量 M/S/DBP平均误差
+	% corrs 3维向量 M/S/DBP相关性
+	matname = '.result.mat';
+
+	matname = fullfile(matpath,matname);
+	if exist(matname)
+		load(matname);
+		nameCell = addAnItemToCell(name,nameCell);
+		coefsCell = addAnItemToCell({coefs},coefsCell);
+		errorsMat = addARowToMat(meanerrors(:)',errorsMat);
+		corrsMat = addARowToMat(corrs(:)',corrsMat);
+	else
+		nameCell = {name};
+		coefsCell = {{coefs}};
+		errorsMat = meanerrors(:)';
+		corrsMat = corrs(:)';
+	end
+	save(matname,'nameCell','coefsCell','errorsMat','corrsMat');
+	end
+
+function mat4return = addARowToMat(row,mat)
+	row = row(:)';
+	if length(mat(1,:)) == length(row)
+		mat4return = [mat;row];
+	else
+		mat4return = mat;
+	end
+end
+
+function cell4return = addAnItemToCell(item,cellin)
+	cell4return = {cellin{:},item};
+	end
 
 function num = getANum(path)
 	num = readNumFromMat(path);
@@ -183,7 +228,7 @@ function num = writeAnItemInfoToReadMe(path,infoStruct)
 		fprintf(fid,'%s\r\n',tName{:});
 		tPaths = infoStruct.paths;
 		for i=1:length(tPaths)
-			fprintf(fid,'%s\r\n',tPaths{i});
+			fprintf(fid,'%s\r\n',getShortenPath(tPaths{i}));
 		end
 		fclose(fid);
 	end

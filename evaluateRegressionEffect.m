@@ -1,46 +1,50 @@
-function [errors] = evaluateRegressionEffect(y,coefs,x,varargin)
-%evaluateRegressionEffect鐢ㄤ簬璇勪及k缁勬嫙鍚堢郴鏁扮殑鏁堟灉銆傞粯璁ゆ儏鍐典笅璁や负杩欎簺绯绘暟閮芥槸绾挎?鎷熷悎绯绘暟銆?
+function [errors,corrs] = evaluateRegressionEffect(y,coefs,x,varargin)
+%evaluateRegressionEffect用于评估k组（输入-拟合系数-输出）的效果。默认情况下认为这些系数都是线性拟合系数。
 %OUTPUT
-%errors 1*k 瀵逛簬coefs杩涜璇勪及寰楀埌鐨刱涓钩鍧囪宸?
+%errors 1*k 对于coefs进行评估得到的k个平均误差 
+%corrs 1×k 对于k组coefs进行评估得到的k个相关系数
 %INPUT
-%y    n*1鐭╅樀    n缁勮緭鍑虹粨鏋滃?
-%coefs    k*m鐭╅樀    k缁勭淮鏁颁负m鐨勬嫙鍚堢郴鏁?
-%x    n*m鐭╅樀    n缁勭淮鏁颁负m鐨勮緭鍏?
+%y    n*1矩阵    n组输出结果值
+%coefs    k*m矩阵    k组维数为m的拟合系数
+%x    n*m矩阵    n组维数为m的输入
 %varargin
-% {1} - savePath    string    鍥惧儚鐨勫瓨鍌ㄨ矾寰?
-%棰勫畾涔?
+% {1} - savePath    string    图像的存储路径
+%预定义
 close all;
 fileName = 'testsetResult';
-%棰勫鐞嗚緭鍏?
+%预处理输入
 errors = zeros(1,length(y(:,1)));
+corrs = zeros(1,length(y(:,1)));
+
 %set(0,'DefaultFigureVisible','on');
 fig = figure;
 for i=1:length(y(:,1))
-	%棰勫鐞嗚緭鍏?
+	%预处理输入
 	y0 = y(i,:)';
 	
-	%璁＄畻杈撳嚭
+	%计算输出
 	outputs = [ones(length(x(:,1)),1),x] * coefs(i,:)';
 	% only for wl
 % 	outputs = outputs([1:14, 17:20]);
 % 	y0 = y0([1:14, 17:20]);
 
-	%璁＄畻璇樊
+	%计算误差
 	terror = abs(outputs - y0);
 
-	%璁＄畻杩斿洖鍊?
+	%计算返回值
 	errors(i) = mean(terror);
+	corrs(i) = corr(outputs(:,1),y0(:,1));
 
-	%缁樺浘
+	%绘图
 	subplot(length(y(:,1)),1,i);
 	plot1 = plot(outputs(:,1),'ko-');
 	hold on,
 	plot2 = plot(y0(:,1),'ro-');
 	legend([plot1, plot2], {'BPest', 'BPreal'});
-	title(['r=',num2str(corr(outputs(:,1),y0(:,1))),' err=:', num2str(errors(i))]);
+	title(['r=',num2str(corrs(i)),' err=:', num2str(errors(i))]);
 	end
 
-	% 濡傛灉浼犲叆浜嗗浘鍍忓瓨鍌ㄨ矾寰勶紝鍒欎繚瀛樻埅鍥惧埌鏂囦欢
+	% 如果传入了图像存储路径，则保存截图到文件
 	if nargin==4
     	saveFigure(fig,varargin{1},fileName);
     elseif nargin==5

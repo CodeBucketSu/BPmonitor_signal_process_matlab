@@ -7,11 +7,11 @@ function paths = getAllDataPath(pathcell)
 end
 
 function [paths,isPathWhatWeWant] = recursivelySearchPath(pathStruct,depth)
-	%recursivelySearchPathç”¨äºé€’å½’è·å–æ‰€æœ‰ç¬¦åˆæ¡ä»¶çš„ç›®å½•
-	%æ‰¾åˆ°æ‰€æœ‰å¯èƒ½çš„è·¯å¾„ï¼šä»¥20ä½œä¸ºå¼€å¤´çš„æ–‡ä»¶å¤¹ï¼Œä¸”æ–‡ä»¶å¤¹ä¸‹åŒ…å«ä¸€ä¸ªâ€˜dataâ€™æ–‡ä»¶å¤¹
-	%å®šä¹‰çˆ¶æ–‡ä»¶å¤¹åˆæ³•å‰ç¼€
+	%recursivelySearchPathÓÃÓÚµİ¹é»ñÈ¡ËùÓĞ·ûºÏÌõ¼şµÄÄ¿Â¼
+	%ÕÒµ½ËùÓĞ¿ÉÄÜµÄÂ·¾¶£ºÒÔ20×÷Îª¿ªÍ·µÄÎÄ¼ş¼Ğ£¬ÇÒÎÄ¼ş¼ĞÏÂ°üº¬Ò»¸ö¡®data¡¯ÎÄ¼ş¼Ğ
+	%¶¨Òå¸¸ÎÄ¼ş¼ĞºÏ·¨Ç°×º
 	parentFolderPref = '20';
-	%æœç´¢å¯èƒ½åŒ…å«æ•°æ®çš„å­æ–‡ä»¶å¤¹çš„æœ€å¤§å±‚æ•°
+	%ËÑË÷¿ÉÄÜ°üº¬Êı¾İµÄ×ÓÎÄ¼ş¼ĞµÄ×î´ó²ãÊı
 	maxSearchDepth = 3;
 	isPathWhatWeWant = false;
 	paths = {};
@@ -23,7 +23,7 @@ function [paths,isPathWhatWeWant] = recursivelySearchPath(pathStruct,depth)
 			return;
 		end
 		if strStartsWith(dirName, parentFolderPref) && marker
-			%ä¸åœ¨ç¬¦åˆæ¡ä»¶çš„æ–‡ä»¶å¤¹ä¸‹ç»§ç»­æŸ¥æ‰¾
+			%²»ÔÚ·ûºÏÌõ¼şµÄÎÄ¼ş¼ĞÏÂ¼ÌĞø²éÕÒ
 			isPathWhatWeWant = true;			
 			paths = {pathStruct.name};
 			return;
@@ -39,7 +39,7 @@ function [paths,isPathWhatWeWant] = recursivelySearchPath(pathStruct,depth)
 end
 
 function [dirs,hasDirNamedByData] = getDirsUnderPath(path)
-	%å®šä¹‰å­æ–‡ä»¶å¤¹åç§°
+	%¶¨Òå×ÓÎÄ¼ş¼ĞÃû³Æ
 	targetDirName = 'data';
 	hasDirNamedByData = false;
 	dirs = {};

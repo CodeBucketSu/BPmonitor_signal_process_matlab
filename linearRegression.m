@@ -1,4 +1,4 @@
-function [coefs,errors]...
+function [coefs,errors,corrs]...
     =linearRegression(BPs,features,varargin)
 %linearRegression函数用于计算多元线性拟合平均压，收缩压与舒张压的拟合系数
 %拟合公式为 bp = a*pwtt + b*k +c*prt+d*...
@@ -20,6 +20,8 @@ fileName = '0-trainset';
 %分配返回值空间
 coefs = zeros(length(BPs(:,1)), length(features(1,:)) + 1);
 errors=zeros(length(BPs(:,1)), 1);
+corrs=zeros(length(BPs(:,1)), 1);
+
 %完成拟合
 for i=1:length(BPs(:,1))
     [coef,~,error] = regress(BPs(i,:)',[ones(length(features(:,1)),1),features]);
@@ -32,12 +34,13 @@ BPRegression = [ones(length(features(:,1)),1),features]*coefs';
 %set(0,'DefaultFigureVisible','on');
 fig = figure;
 for i=1:length(BPs(:,1))
+    corrs(i) = corr(BPs(i,:)',BPRegression(:,i));
 	subplot(length(BPs(:,1)),1,i)
 	plot2 = plot(BPs(i,:),'ro-');
 	hold on
 	plot1 = plot(BPRegression(:,i),'ko-');
     legend([plot1, plot2], {'BPest', 'BPreal'});
-    ttl = {[' r=',num2str(corr(BPs(i,:)',BPRegression(:,i))), ' err=', num2str(errors(i))]};
+    ttl = {[' r=',num2str(corrs(i)), ' err=', num2str(errors(i))]};
     strCoefs = '';
     for r = 1:size(coefs, 2)
         strCoefs = [strCoefs, num2str(coefs(i, r)), ','];
