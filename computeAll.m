@@ -77,12 +77,12 @@ for j = 1 : length(fileNames)
                 bpElbow(startTime : endTime), bpWrist(startTime : endTime), needPlot, titleOfSignals);
 
             %% 计算每次测量事件对应的各种特征和心率的相关系数
-            [corrPwtt2Hr, fig] = computeCorrelationsBetweenFeatureAndHRFromOneMeasureEvent(hr, pwtts, pwttNames, needPlot | hasError, titleOfSignals); 
-            figuresToClose = recordFeatureIfNeeded(figuresToClose, fig, needPlot || hasError);
-            [corrFtr2HrElb, fig] = computeCorrelationsBetweenFeatureAndHRFromOneMeasureEvent(hr, pwfs_elbw, PWFnames, needPlot | hasError, titleOfSignals); 
-            figuresToClose = recordFeatureIfNeeded(figuresToClose, fig, needPlot || hasError);
-            [corrFtr2HrWrst, fig] = computeCorrelationsBetweenFeatureAndHRFromOneMeasureEvent(hr, pwfs_wrist, PWFnames, needPlot | hasError, titleOfSignals); 
-            figuresToClose = recordFeatureIfNeeded(figuresToClose, fig, needPlot || hasError);
+            [corrPwtt2Hr, fig] = computeCorrelationsBetweenFeatureAndHRFromOneMeasureEvent(hr, pwtts, pwttNames, needPlot & hasError, titleOfSignals); 
+            figuresToClose = recordFeatureIfNeeded(figuresToClose, fig, needPlot && hasError);
+            [corrFtr2HrElb, fig] = computeCorrelationsBetweenFeatureAndHRFromOneMeasureEvent(hr, pwfs_elbw, PWFnames, needPlot & hasError, titleOfSignals); 
+            figuresToClose = recordFeatureIfNeeded(figuresToClose, fig, needPlot && hasError);
+            [corrFtr2HrWrst, fig] = computeCorrelationsBetweenFeatureAndHRFromOneMeasureEvent(hr, pwfs_wrist, PWFnames, needPlot & hasError, titleOfSignals); 
+            figuresToClose = recordFeatureIfNeeded(figuresToClose, fig, needPlot && hasError);
 
             %% 必要时让用户判定检测数据是否可用,仅当可用时才记录数据
            if ~hasError || (needPlot || hasError) && input('本次事件的数据检测是否可用？（是：1， 否：其他）') == 1 

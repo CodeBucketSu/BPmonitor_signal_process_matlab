@@ -38,11 +38,11 @@ PWTTnames = {'PWTT\_elbow\_peak', 'PWTT\_elbow\_valley', 'PWTT\_elbow\_key', 'PW
 
 %% 分别从手肘和手腕处的脉搏波中提取波形特征
 [PWFs_elbw, PWFnames]  = computeFeaturesWithPulseWave(pwElbow);
-if (needPlot || hasError)
+if (needPlot && hasError)
     figures(end + 1) = plotPulseWaveFeatures(PWFs_elbw, PWFnames, titleOfSignals);
 end
 [PWFs_wrist, PWFnames]  = computeFeaturesWithPulseWave(pwWrist);
-if (needPlot || hasError)
+if (needPlot && hasError)
     figures(end + 1) = plotPulseWaveFeatures(PWFs_wrist, PWFnames, titleOfSignals);
 end
 

@@ -2,9 +2,6 @@ function mainBatch2a()
 	close all
 
 	%%预定义
-	%编码方式
-	encodeMethod = feature('DefaultCharacterSet');
-	feature('DefaultCharacterSet','UTF-8');
 	%采取の特征点检测方式
 	method = 'PEAK';
 	save('method.mat','method');
@@ -144,7 +141,6 @@ function mainBatch2a()
 		end
         end
     end
-	feature('DefaultCharacterSet',encodeMethod);
 	set(0,'DefaultFigureVisible','on');
 end
 
