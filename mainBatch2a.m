@@ -110,7 +110,7 @@ function mainBatch2a()
 		[bps,PWFs] = mergeDataInMap(trainPaths,featuresMap,structItemNames);		
 		[coefs,errors,corrs] = linearRegression(bps,PWFs',fullPath,...
 			name);
-		saveDataToMat(fullPath,name,coefs,errors,corrs);
+		saveDataToMat(fullPath,name,coefs,errors,corrs,true);
 		for j=1:length(allTestPaths)
 			testPaths = allTestPaths{j};
 			%判断两者是否有交集
@@ -140,7 +140,7 @@ function mainBatch2a()
 			%%测试截图文件名命名规则：拟合数据组编号+测试数据组编号+使用的算法+唯一编号
 			[regressionErrors,regressionCorrs] = evaluateRegressionEffect(testBPs,coefs,testPWFs'...
 				,savePath,name);
-			saveDataToMat(savePath,name,coefs,regressionErrors,regressionCorrs);
+			saveDataToMat(savePath,name,coefs,regressionErrors,regressionCorrs,false);
 
 		end
         end
@@ -155,34 +155,64 @@ function shortPath = getShortenPath(fullpath)
 	shortPath = fullfile(dataProvider,dirname);
 end
 
-function saveDataToMat(matpath,name,coefs,meanerrors,corrs)
+function saveDataToMat(matpath,name,coefs,meanerrors,corrs,isTrainset)
 	%% saveDataToMat将拟合或测试结果写入到一个mat文件内
 	% INPUT
 	% name char类型 拟合或测试文件名
 	% coefs n维向量 拟合系数
 	% meanerrors 3维向量 M/S/DBP平均误差
 	% corrs 3维向量 M/S/DBP相关性
+	% isTrainset bool 是否训练集
 	matname = '.result.mat';
 
 	matname = fullfile(matpath,matname);
-	if exist(matname)
-		load(matname);
-		nameCell = addAnItemToCell(name,nameCell);
-		coefsCell = addAnItemToCell({coefs},coefsCell);
-		errorsMat = addARowToMat(meanerrors(:)',errorsMat);
-		corrsMat = addARowToMat(corrs(:)',corrsMat);
+	if isTrainset
+		if exist(matname)
+			load(matname);
+			trainSetNameCell = addAnItemToCell(name,trainSetNameCell);
+			trainSetCoefsCell = addAnItemToCell({coefs},trainSetCoefsCell);
+			trainSetErrorsMat = addARowToMat(meanerrors(:)',trainSetErrorsMat);
+			trainSetCorrsMat = addARowToMat(corrs(:)',trainSetCorrsMat);
+		else
+			trainSetNameCell = {name};
+			trainSetCoefsCell = {{coefs}};
+			trainSetErrorsMat = meanerrors(:)';
+			trainSetCorrsMat = corrs(:)';
+			testSetNameCell={};
+			testSetCoefsCell={};
+			testSetErrorsMat=[];
+			testSetCorrsMat=[];
+		end
 	else
-		nameCell = {name};
-		coefsCell = {{coefs}};
-		errorsMat = meanerrors(:)';
-		corrsMat = corrs(:)';
-	end
-	save(matname,'nameCell','coefsCell','errorsMat','corrsMat');
-	end
+		if exist(matname)
+			load(matname);
+			testSetNameCell = addAnItemToCell(name,testSetNameCell);
+			testSetCoefsCell = addAnItemToCell({coefs},testSetCoefsCell);
+			testSetErrorsMat = addARowToMat(meanerrors(:)',testSetErrorsMat);
+			testSetCorrsMat = addARowToMat(corrs(:)',testSetCorrsMat);
+		else
+			testSetNameCell = {name};
+			testSetCoefsCell = {{coefs}};
+			testSetErrorsMat = meanerrors(:)';
+			testSetCorrsMat = corrs(:)';
+			trainSetNameCell={};
+			trainSetCoefsCell={};
+			trainSetErrorsMat=[];
+			trainSetCorrsMat=[];	
+		end	
+	end	
+	save(matname,...
+		'testSetNameCell','trainSetNameCell',...
+		'testSetCoefsCell','trainSetCoefsCell',...
+		'testSetErrorsMat','trainSetErrorsMat',...
+		'testSetCorrsMat','trainSetCorrsMat');
+end
 
 function mat4return = addARowToMat(row,mat)
 	row = row(:)';
-	if length(mat(1,:)) == length(row)
+	if isempty(mat)
+		mat4return = row;
+	elseif length(mat(1,:)) == length(row)
 		mat4return = [mat;row];
 	else
 		mat4return = mat;
@@ -190,7 +220,8 @@ function mat4return = addARowToMat(row,mat)
 end
 
 function cell4return = addAnItemToCell(item,cellin)
-	cell4return = {cellin{:},item};
+	cellin = cellin';
+	cell4return = {cellin{:},item}';
 	end
 
 function num = getANum(path)
