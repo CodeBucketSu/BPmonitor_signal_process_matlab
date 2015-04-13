@@ -10,7 +10,7 @@ pvals_good = zeros(size(pvals, 1), num2keep);
 if strcmp(method, 'EACH_FEATURE')
     if size(corrs, 1) == 12
         [pvals_sort, pvals_idxs] = sort(corrs(12, :));        % 筛选PTT和血压关系
-        pvals_idxs = [15,23,21,16,24,13,14,2,11,3,10,8,25,9,7,26,17,6,5,18,19,1,12,4,22,20];                                       % 筛选PTT和心率关系
+%         pvals_idxs = [15,23,21,16,24,13,14,2,11,3,10,8,25,9,7,26,17,6,5,18,19,1,12,4,22,20];                                       % 筛选PTT和心率关系
 %         pavals_idx = [[21,23,15,11,24,2,14,16,3,5,1,13,8,25,7,20,6,10,17,4,9,12,26,22,18,19]];
 %         pvals_idxs = ;                                       % 筛选PTT和心率关系
     else 

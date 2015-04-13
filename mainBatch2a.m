@@ -6,28 +6,49 @@ function mainBatch2a()
 	method = 'PEAK';
 	save('method.mat','method');
 	%采取の脉搏波特征特征名
-	%selectedPWFNames = {};%'KVAL','PRT','DPW','DPWr','DiaAr'
+	%{'PH','PRT','DNH','DNHr','DPH',
+    %'DPHr','PWA','RBAr','DBAr','DiaAr',...
+    % 'SLP1','SLP2','SLP3','RBW10','RBW25',
+    %'RBW33','RBW50','RBW66','RBW75','DBW10',
+    %'DBW25','DBW33','DBW50','DBW66','DBW75',...
+    % 'DNPT','KVAL','AmBE','DfAmBE','DNC',
+    %'SC','DPW','DPWr','PDNT','PDPT'...
+    % };
     cellOfSelectedPWFNames = {{};...
+        
         {'PRT','DPWr'};...
         {'PRT','DPW'};...
         {'PRT','DiaAr'};...
-        {'PRT','DPW','DPWr'};...
-        {'PRT','DPW','DPWr','DiaAr'};...
-        {'PDPT','PRT','DPW','DPWr','DiaAr'};...
+        {'KVAL'};...
+        {'PDNT'};...
+        {'DNPT'};...
+        {'SLP1'};...
+        {'SLP2'};...
+        {'SLP3'};...
+        {'SLP1','SLP2','SLP3'};...
+        {'PDPT'};...
+        {'PH'};...
+        {'PRT'};...
         {'KVAL','PRT','DPW','DPWr','DiaAr'};...
-        {'PRT','DPW','DPWr','DiaAr', 'DNHr'};...
+        {'DNHr','PRT','DPW','DPWr','DiaAr'};...
+        {'PDPT','PRT','DPW','DPWr','DiaAr'};...
+        {'PDNT','PRT','DPW','DPWr','DiaAr'};...
+        {'SLP1','SLP2','SLP3','PRT','DPW','DPWr','DiaAr'};...
+        {'PDPT','PDNT','DNHr','PRT','DPW','DPWr','DiaAr'};...
+        {'SLP1','SLP2','SLP3','PDPT','PDNT','DNHr','PRT','DPW','DPWr','DiaAr'};...
+        {'PRT','DPW','DPWr','DiaAr', 'DNHr','PDNT','DWB10'};...
         };
 	%绘图の设定
-	set(0,'DefaultFigureVisible','on');
+	set(0,'DefaultFigureVisible','off');
 	needPlot = 0;
 	%存储图片の文件夹名称
 	%name = 'MultiLinearRegression';
 	%说明文件の名称
 	readme = 'readme.md';
 	%说明文件中训练集与测试集の标记
-	setMarker = {'**trainset**','**testset**'};
-	trainSetSize = 3;
-	testSetSize = 2;
+	setMarker = {'***********trainset***********','***********testset***********'};
+	trainSetSize = 2;
+	testSetSize = 1;
 	structItemNames = {'bp','pwf'};
 	%Map初始化
 	featuresMap = containers.Map();
@@ -35,13 +56,14 @@ function mainBatch2a()
 	%1.1选择训练集数据来源
 	trainSetPaths = getAllDataPath(...
 		uipickfiles('REFilter','\$','Prompt','请选择标定数据集所在的文件夹集合','FilterSpec',...
-			'E:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\'));
+			'C:\Users\FrankSu\Documents\BP\04_softwares\interface_python\BPMonitor_git\data\young'));
 	if isempty(trainSetPaths)
 	    return
 	end
 	%1.2选择测试集数据来源
 	testSetPaths = getAllDataPath(...
-		uipickfiles('REFilter','\$','Prompt','请选择测试数据集所在的文件夹集合','FilterSpec',fileparts(trainSetPaths{1})));
+		uipickfiles('REFilter','\$','Prompt','请选择测试数据集所在的文件夹集合','FilterSpec',...
+            'C:\Users\FrankSu\Documents\BP\04_softwares\interface_python\BPMonitor_git\data\young'));
 	if isempty(testSetPaths)
 		return
 	end
@@ -95,20 +117,19 @@ function mainBatch2a()
 
 		fid = fopen(fullfile(fullPath,readme),'a+');
 		if fid~=-1
-			fprintf(fid,'%s\r\n',setMarker{1});
+			fprintf(fid,'\r\n\r\n%s\r\n',setMarker{1});
 			fprintf(fid,'%s\r\n',name);
 			for i=1:length(trainPaths)
-				[~,childPath]=fileparts(trainPaths{i});
-				fprintf(fid,'%d. %s\r\n',i,trainPaths{i})
+				fprintf(fid,'%d. %s\r\n',i,getShortenPath(trainPaths{i}))
 			end
 			fprintf(fid,'%s\r\n',setMarker{2});
 			fclose(fid);
 		end
-
 		%%4.3拟合
 		[bps,PWFs] = mergeDataInMap(trainPaths,featuresMap,structItemNames);		
-		[coefs,errors] = linearRegression(bps,PWFs',fullPath,...
+		[coefs,errors,corrs] = linearRegression(bps,PWFs',fullPath,...
 			name);
+		saveDataToMat(fullPath,name,coefs,errors,corrs);
 		for j=1:length(allTestPaths)
 			testPaths = allTestPaths{j};
 			%判断两者是否有交集
@@ -136,13 +157,60 @@ function mainBatch2a()
 			%4.5 测试
 			[testBPs,testPWFs] = mergeDataInMap(testPaths,featuresMap,structItemNames);
 			%%测试截图文件名命名规则：拟合数据组编号+测试数据组编号+使用的算法+唯一编号
-			regressionErrors = evaluateRegressionEffect(testBPs,coefs,testPWFs'...
+			[regressionErrors,regressionCorrs] = evaluateRegressionEffect(testBPs,coefs,testPWFs'...
 				,savePath,name);
+			saveDataToMat(savePath,name,coefs,regressionErrors,regressionCorrs);
+
 		end
         end
     end
+	% feature('DefaultCharacterSet',encodeMethod);
 	set(0,'DefaultFigureVisible','on');
 end
+
+function shortPath = getShortenPath(fullpath)
+	[parentPath,dirname] = fileparts(fullpath);
+	[~,dataProvider] = fileparts(parentPath);
+	shortPath = fullfile(dataProvider,dirname);
+end
+
+function saveDataToMat(matpath,name,coefs,meanerrors,corrs)
+	%% saveDataToMat将拟合或测试结果写入到一个mat文件内
+	% INPUT
+	% name char类型 拟合或测试文件名
+	% coefs n维向量 拟合系数
+	% meanerrors 3维向量 M/S/DBP平均误差
+	% corrs 3维向量 M/S/DBP相关性
+	matname = '.result.mat';
+
+	matname = fullfile(matpath,matname);
+	if exist(matname)
+		load(matname);
+		nameCell = addAnItemToCell(name,nameCell);
+		coefsCell = addAnItemToCell({coefs},coefsCell);
+		errorsMat = addARowToMat(meanerrors(:)',errorsMat);
+		corrsMat = addARowToMat(corrs(:)',corrsMat);
+	else
+		nameCell = {name};
+		coefsCell = {{coefs}};
+		errorsMat = meanerrors(:)';
+		corrsMat = corrs(:)';
+	end
+	save(matname,'nameCell','coefsCell','errorsMat','corrsMat');
+	end
+
+function mat4return = addARowToMat(row,mat)
+	row = row(:)';
+	if length(mat(1,:)) == length(row)
+		mat4return = [mat;row];
+	else
+		mat4return = mat;
+	end
+end
+
+function cell4return = addAnItemToCell(item,cellin)
+	cell4return = {cellin{:},item};
+	end
 
 function num = getANum(path)
 	num = readNumFromMat(path);
@@ -179,7 +247,7 @@ function num = writeAnItemInfoToReadMe(path,infoStruct)
 		fprintf(fid,'%s\r\n',tName{:});
 		tPaths = infoStruct.paths;
 		for i=1:length(tPaths)
-			fprintf(fid,'%s\r\n',tPaths{i});
+			fprintf(fid,'%s\r\n',getShortenPath(tPaths{i}));
 		end
 		fclose(fid);
 	end

@@ -1,6 +1,6 @@
 clc, clear, close all
 set(0,'DefaultFigureVisible', 'on');
-needPlot = 0;
+needPlot = 1;
 
 %%预定义:采取的特征点检测方式
 method = 'PEAK';
@@ -30,7 +30,7 @@ saveFigures(figures, filePathForSave, ...
 %     {'静止或改变姿态：PWTT与BP的相关性'; '静止或改变姿态：PWF_elbw与BP的相关性';  '静止或改变姿态：PWF_wrst与BP的相关性'});
 
 %% 处理静止（改变姿态）测试集信号
-fileNames = {'static.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hs.mat', 'hs.mat'
+fileNames = {'ydh.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hs.mat', 'hs.mat'
 [HRs_static, BPs_static, PWTTs_static, PWFs_elb_static, PWFs_wrst_static, PWFnames_static, ...
     PWTTstats_static, PWFstats_elb_static, PWFstat_wrst_static, corrBpHr_static, figures]...
     = computeAll(filePathForDate, fileNames, needPlot, '静止或改变姿态');
