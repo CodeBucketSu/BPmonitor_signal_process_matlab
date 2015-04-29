@@ -21,7 +21,7 @@ ecg = sigfilter(ecg);
 
 
 %% 步骤5：验证步骤4是否排除了太多点
-isTrue = 0;
+isTrue = 1;
 isTrue = isTrue || isTooManyPeaksRemoved({ecg_peak, bp_peak}, {ecg_peak_used, bp_peak_used});
 isTrue = isTrue || isTooManyPeaksRemoved({ecg_peak, pwtValley}, {ecg_peak_used, bp_valley_used});
 isTrue = isTrue || isTooManyPeaksRemoved({ecg_peak, bp_key}, {ecg_peak_used, bp_key_used});
