@@ -6,6 +6,8 @@
 %///////////////////////////////////////////
 
 function  [HR_peak,HR] = HR_detection(data)
+%采样率
+sample_rate=125;
 %峰值个数
 peak_num=0;
 %第一列为峰值坐标,第二列为峰值值,第三列为心率
@@ -21,17 +23,20 @@ wing20p(delta5 <= 0) = 0;
 
 idxWing20p = find(wing20p>0);
 peakCandidates = [];
+threshold = floor(sample_rate * 3 / 10);
 for i = 1 : length(idxWing20p)
     peakCandi =idxWing20p(i);
-    if (peakCandi > 300) && (peakCandi < length(wing20p) - 300)...
-            && wing20p(peakCandi) == max(wing20p(peakCandi - 300 : peakCandi + 300))
+    if (peakCandi > threshold) && (peakCandi < length(wing20p) - threshold)...
+            && wing20p(peakCandi) == max(wing20p(peakCandi - threshold : peakCandi + threshold))
         peakCandidates(end + 1) = peakCandi;
     end
 end
 
+threshold = floor(sample_rate * 2 / 10);
+delay = floor(sample_rate * 6 / 1000);
 for j = 1 : length(peakCandidates)
     for i = peakCandidates(j) - 5 : peakCandidates(j) + 5;
-        if data(i)==max(data(i-200:i+60))   %保证斜率和局部最大值
+        if data(i)==max(data(i-threshold:i+delay))   %保证斜率和局部最大值
               count=0;
             while data(i)-data(i+1)==0                    %如果连续极点相同，取中间值
                    i=i+1;
@@ -49,7 +54,7 @@ for j = 1 : length(peakCandidates)
 end
 
 %% 排除与前一个点距离过小的点
-minInterval = 400;
+minInterval = floor(sample_rate * 4 / 10);
 idx = (peak(2:end, 1) - peak(1:end - 1, 1)) > minInterval;
 peak = peak(idx, :);
 peak_num = size(peak, 1);
@@ -57,12 +62,13 @@ peak_num = size(peak, 1);
 %%
 %心率计算
 j=1;
-T = 1200;        %对应心率为50,设定阈值防止出现由于漏点造成的过低心率，阈值由平时心率来决定
+threshold = floor(sample_rate * 3 / 10);
+T = floor(50 * sample_rate / 60);        %对应心率为50,设定阈值防止出现由于漏点造成的过低心率，阈值由平时心率来决定
 for i=1:peak_num-1
      t=peak(i+1,peak_index)-peak(i,peak_index);
-     if t > 300 && t < 1.5 *T                %滤除临近点和不能小于平时心率的0.8
+     if t > threshold && t < 1.5 *T                %滤除临近点和不能小于平时心率的0.8
          HR(j,1)=peak(i,peak_index);
-         HR(j,2)=60*1000/t;
+         HR(j,2)=60*sample_rate/t;
          HR_peak(j,1)=peak(i,1);
          HR_peak(j,2)=peak(i,2);
          j=j+1;

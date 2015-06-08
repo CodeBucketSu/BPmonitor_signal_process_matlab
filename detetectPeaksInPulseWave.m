@@ -7,7 +7,9 @@ function [peaks] = detetectPeaksInPulseWave(data, HR4ref)
 % 输出：
 %   peaks：  N x 2   分别是波峰的位置和波峰的幅值
 
-peaks = detetectPeaksUsingWingInSignal(data, 100);
+peakWidth = floor(getPlethParas(1)/10);
+
+peaks = detetectPeaksUsingWingInSignal(data, peakWidth);
 
 
 end

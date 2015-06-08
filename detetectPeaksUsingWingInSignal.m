@@ -5,9 +5,11 @@ function [peaks] = detetectPeaksUsingWingInSignal(data, peakWidth)
 %   peakWidth：波的估计宽度
 % 输出：
 %   peaks：  N x 2   分别是波峰的位置和波峰的幅值
+threshold = floor(getPlethParas(1)*3/10);
+minVal = floor(getPlethParas(1)*5/10);
 
 len = length(data);
-maxLenRet = ceil(len / 300);
+maxLenRet = ceil(len / threshold);
 peaks = zeros(maxLenRet, 2);
 num = 0;
 
@@ -29,14 +31,17 @@ idx = idx .* (d1 > 0);
 %% 步骤3：遍历可能点，满足两个条件则为波峰：
 %       1，前70点1阶导数为正，后100点一阶导数为负；
 %       2，为前后300点内的最大值
+bottomVal = floor(getPlethParas(1)*5/100);
+upVal = floor(getPlethParas(1)*7/100);
+
 idxs = find(idx);
-idxs = idxs(idxs > 500);
-idxs = idxs(idxs + 300 < length(data));
+idxs = idxs(idxs > minVal);
+idxs = idxs(idxs + threshold < length(data));
 for i = 1 : length(idxs)
     idx = idxs(i);
-    if diff(data(idx - 50:idx)) >= 0
-        if diff(data(idx : idx + 70)) <= 0
-            if data(idx) == max(data(idx -300 : idx + 300))
+    if diff(data(idx - bottomVal:idx)) >= 0
+        if diff(data(idx : idx + upVal)) <= 0
+            if data(idx) == max(data(idx -threshold : idx + threshold))
                 num = num + 1;
                 peaks(num, :) = [idx, data(idx)];
             end
