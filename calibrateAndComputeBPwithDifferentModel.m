@@ -19,8 +19,8 @@ plots = zeros(length(formulas) + 1, 1);
 
 hold on;
 title('测试数据集计算结果');
-colors = {'r', 'g', 'b', 'm', 'c', 'k'};
-colorsdot = {'*r', '*g', '*b', '*m', '*c', '*k'};
+colors = {'r', 'g', 'b', 'm', 'c', 'k', ''};
+colorsdot = {'*r', '*g', '*b', '*m', '*c', '*k', 'y'};
 plots(1) = plot(BP4Esti, colors{1}); 
 plot(BP4Esti, 'r*');
 ttl = {};

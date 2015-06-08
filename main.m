@@ -12,10 +12,10 @@ save('method.mat','method');
     '请选择数据所在的文件夹：请确保该文件夹下存在名为“data”和“result”的文件夹！');
 filePathForDate = [filePath, '/data'];
 filePathForSave = [filePath, '/result'];
-formulas = {'MK-MODEL', 'POWER', 'LINEAR', 'QUADRIC'};
+formulas = {'MK-MODEL', 'POWER', 'LINEAR', 'QUADRIC', 'INVERSE', 'INVERSE-QUADRIC'};
 
 %% 处理运动前的信号
-fileNames = {'pf.mat'};  %'sj.mat', 'xc.mat','pf.mat', 'ydh.mat'
+fileNames = {'pf.mat'};  %'sj.mat', 'xc.mat','pf.mat', 'ydh.mat','sj.mat','sj1.mat'
 [HRs, BPs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames, PWTTstats, PWFstats_elb, PWFstat_wrst, corrBpHr, figures]...
     = computeAll(filePathForDate, fileNames, needPlot, '标定数据');
 saveFigures(figures, filePathForSave, ...
@@ -30,7 +30,7 @@ saveFigures(figures, filePathForSave, ...
 %     {'静止或改变姿态：PWTT与BP的相关性'; '静止或改变姿态：PWF_elbw与BP的相关性';  '静止或改变姿态：PWF_wrst与BP的相关性'});
 
 %% 处理静止（改变姿态）测试集信号
-fileNames = {'static.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hs.mat', 'hs.mat'
+fileNames = {'static.mat'};  %'static.mat', 'gesture.mat', 'gesture1.mat', 'bq_hx.mat', 'hs.mat'
 [HRs_static, BPs_static, PWTTs_static, PWFs_elb_static, PWFs_wrst_static, PWFnames_static, ...
     PWTTstats_static, PWFstats_elb_static, PWFstat_wrst_static, corrBpHr_static, figures]...
     = computeAll(filePathForDate, fileNames, needPlot, '静止或改变姿态');
@@ -53,19 +53,13 @@ saveFigures(figures, filePathForSave, ...
 %     features_elbow_hs, features_wrist_hs] = computeAll(filePathForDate, fileNames, needPlot, '喝水');
 % saveFigure(figCorr, filePathForSave, '喝水：PWTT与BP的相关性');
 
-%% 标定并验证
-fig = figure('Name', ' 标定数据'); 
-calibrateAndPlot(BPs(3, :), PWTTs(9, :), 'POWER');
-saveas(fig, [filePathForSave, '/标定数据：标定后估计血压'], 'fig');
-set(fig, 'PaperPositionMode', 'auto');
-saveas(fig, [filePathForSave, '/标定数据：标定后估计血压'], 'jpg');
 %% 用静止数据验证
 [MSEs_static, MEs_static, SVEs_static, CORRs_static, figEst] = calibrateAndComputeBPwithFeaturesAndDifferentModel...
-    (BPs(3, :), PWTTs, BPs_static(3, :), PWTTs_static, formulas, PWTTstats_static(:, 3), '静止或改变姿态：用PWTT估计血压');
+    (BPs(1, :), PWTTs, BPs_static(1, :), PWTTs_static, formulas, PWTTstats_static(:, 3), '静止或改变姿态：用PWTT估计血压');
 % saveFigure(figCorr, filePathForSave, '静止或改变姿态：标定后估计血压');
 
-[MSEs_static, MEs_static, SVEs_static, CORRs_static, figEst] = calibrateAndComputeBPwithFeaturesAndDifferentModel...
-    (BPs(3, :), PWFs_wrst, BPs_static(3, :), PWFs_wrst_static, formulas, PWFstat_wrst_static(:, 3), '静止或改变姿态：用PWF估计血压');
+% [MSEs_static, MEs_static, SVEs_static, CORRs_static, figEst] = calibrateAndComputeBPwithFeaturesAndDifferentModel...
+%     (BPs(3, :), PWFs_wrst, BPs_static(3, :), PWFs_wrst_static, formulas, PWFstat_wrst_static(:, 3), '静止或改变姿态：用PWF估计血压');
 
 % % 用憋气数据验证
 % [MSEs_bq, MEs_bq, SVEs_bq, CORRs_bq, figEst] = calibrateAndComputeBPwith12PWTTsAndDifferentModel...

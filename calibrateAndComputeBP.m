@@ -24,7 +24,7 @@ switch formula
         estBP = computeBPwithQuadModel(PWTT4Esti, paras);
     case 'INVERSE'
         paras = calibrateInverseModel(BP4Calib, PWTT4Calib);
-        estBP = computeBPwithInvererseModel(PWTT4Esti, paras);
+        estBP = computeBPwithInverseModel(PWTT4Esti, paras);
     case 'INVERSE-QUADRIC'
         paras = calibrateInverseQuadricModel(BP4Calib, PWTT4Calib);
         estBP = computeBPwithInverseQuadricModel(PWTT4Esti, paras);

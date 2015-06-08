@@ -1,10 +1,10 @@
 function visualizeResult()
-% close all
+close all
 [fileName, filePath] = uigetfile('E:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\batch_result\resultWithAllKindOfBPs',... % for syl
     '请选择批处理结果文件。');
 load([filePath, fileName]);
-% results = {result_dbp; result_sbp; result_mbp};
-results = {result};
+results = {result_dbp; result_sbp; result_mbp};
+% results = {result};
 meanCorrsPTT = [];
 meanCorrsPWFelbw = [];
 meanCorrsPWFwrst = [];
@@ -22,7 +22,7 @@ end
 
 
 function [meanCorrsPTT, meanCorrsPWFelbw, meanCorrsPWFwrst] = visualizeOneResult(result)
-numOfPWF = 33;
+numOfPWF = 35;
 col = size(result, 2);
 % 初始化PTT相关数据
 PTT2BPcorr = zeros(12, col);
@@ -66,7 +66,7 @@ for i = 1  : length(corrs)
     corr = corrs{i};
     pval = pvals{i};
     name = names{i};
-%     [corr, pval] = selectResults(corr, pval, 0.6, 'EACH_FEATURE');
+    [corr, pval] = selectResults(corr, pval, 0.6, 'EACH_FEATURE');
     meanCorr = plotCorrResult(corr, pval, name);
     if i == 2
         meanCorrsPTT = meanCorr;
@@ -112,9 +112,15 @@ function [meanCorr, figs] = plotCorrResult(corrs, pvals, figureName)
     nums = countGoodCorr(corrs, pvals);
     signs = countSignCorr(corrs);
     if size(corrs, 1) == 12
-        selectIdxs = [1:3, 5:7, 9:12];
+%         selectIdxs = [1:3, 5:7, 9:12];
+        selectIdxs = 1 : 12
     else
-        selectIdxs = [1, 3:6, 2, 14:15, 17, 19:21, 23, 25, 32:33, 33, 26, 27, 7:10, 11:13, 30:31];
+        selectIdxs = [1, 3:6,...   
+                      2, 14:15, 17, 19,...   
+                      20:21, 23, 25, 32,...
+                      33, 34, 26, 27, 7,...
+                      8:10, 11:12,...
+                      13, 30:31];
     end
     nums = nums(selectIdxs);
     signs = signs(selectIdxs);

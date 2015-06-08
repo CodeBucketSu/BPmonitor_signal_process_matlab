@@ -2,7 +2,7 @@ function [HRs, BPs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames] = mainFunc2(path, need
 %   BPs：3   x   lenEvents   每次测量时间对应的血压，顺序为：平均压，收缩压，舒张压
 %   PWFs：k  x    lenEvents  k个特征（如心率，pwtt，k，prt）所对应的单次测量均值序列
 %% 只采用calibration的数据
-candidates = {'pf','xc','sj'};
+candidates = {'pf','xc','sj', 'ydh'}; %'pf','xc','sj', 'ydh'
 
 %% 选取数据所在文件夹
 filePathForData = [path, '/data'];
