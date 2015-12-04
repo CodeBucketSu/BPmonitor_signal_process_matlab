@@ -5,20 +5,20 @@ function [onsets] = detectOnsetsInPulseWave(data, peaks)
 %   peaks：  N x 2   波峰，分别为波峰位置和波峰幅值
 % 输出：
 %   onsets： N x 2   起始点，分别为位置和幅值
-peaks = peaks(peaks(:, 1) > 300, :);
+peaks = peaks(peaks(:, 1) > floor(getSampleRate(2) /1000 * 300), :);
 onsets = zeros(size(peaks));
 %% 步骤1：在每个波峰前寻找波谷,
 for i = 1 : size(peaks, 1)
     pIdx = peaks(i, 1);
     
     %% 步骤1：确认寻找范围起点：从该点后50点起直到波峰处1阶导数都为正
-    data4start = data(pIdx - 300 : pIdx);
+    data4start = data(pIdx - floor(getSampleRate(2) /1000 * 300) : pIdx);
     diff4start = diff(data4start);
     idxStart = find(diff4start < 0, 1, 'last');
     if length(idxStart) == 0
         idxStart = 0;
     end
-    idxStart = pIdx - 300 + idxStart - 2 - 50;
+    idxStart = pIdx - floor(getSampleRate(2) /1000 * 300) + idxStart - 2 - floor(getSampleRate(2) /1000 * 50);
     data4valley = data(idxStart : pIdx);
     
     %% 步骤2：确认寻找波谷点范围的终点，满足:

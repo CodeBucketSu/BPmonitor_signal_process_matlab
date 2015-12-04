@@ -7,7 +7,7 @@
 
 function  [HR_peak,HR] = HR_detection(data)
 %采样率
-sample_rate=125;
+sample_rate=getSampleRate(1);
 %峰值个数
 peak_num=0;
 %第一列为峰值坐标,第二列为峰值值,第三列为心率

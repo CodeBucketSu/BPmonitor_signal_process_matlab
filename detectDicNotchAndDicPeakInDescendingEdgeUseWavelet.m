@@ -26,7 +26,7 @@ if zeroPassPointsNum<4
 	return
 end
 pos =  pos(4) * resampleInterval ;
-%   4-2 将降中峡位置增采样，并在[-resampleInterval,resampleInterval]内寻找二阶导最大值点，作为降中峡原始波形位置
+%   3-2 将降中峡位置增采样，并在[-resampleInterval,resampleInterval]内寻找二阶导最大值点，作为降中峡原始波形位置
 if pos + resampleInterval<=length(data) && pos - resampleInterval>0
         [~,shift] = max(abs(diff(data(pos- resampleInterval:pos + resampleInterval),2)));
         pos = pos + shift - resampleInterval; 

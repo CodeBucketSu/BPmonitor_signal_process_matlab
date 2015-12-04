@@ -4,20 +4,25 @@ function [ pwtPeak, pwtValley, pwtKey, pwtRise, hr, fig, hasError ] = computePWT
 
 
 %% 步骤1：滤波
-bp = sigfilter(bp);
-ecg = sigfilter(ecg);
+% bp = sigfilter(bp);
+% ecg = sigfilter(ecg);
 
 %% 步骤2：检测R波波峰，计算心率
 [ecg_peak, hr]=HR_detection(ecg);
 
 %% 步骤3：提取脉搏波关键点
-[bp_peak, bp_valley, bp_key, bp_rise]= detectPeaksInPulseWave(bp);
+%[bp_peak, bp_valley, bp_key, bp_rise]= detectPeaksInPulseWave(bp);
+tmpStruct = load('tmpdata.mat');
+bp_peak = tmpStruct.peaks;
+bp_valley = tmpStruct.onsets;
+bp_key = tmpStructent10s;
+bp_rise = tmpStruct.percent50s;
 
 %% 步骤4：计算pwt,并验证是否排除了太多点
-[pwtPeak, ~, bp_peak_used] = computeTimeInterval(ecg_peak, bp_peak, 100, 400);
-[pwtValley, ~, bp_valley_used] = computeTimeInterval(ecg_peak, bp_valley, 50, 400);
-[pwtKey, ecg_peak_used, bp_key_used] = computeTimeInterval(ecg_peak, bp_key, 50, 400);
-[pwtRise, bp_valley_used1, bp_peak_used1] = computeTimeInterval(bp_valley, bp_peak, 10, 200);
+[pwtPeak, ~, bp_peak_used] = computeTimeInterval(ecg_peak, bp_peak, floor(getSampleRate(1) / 1000 * 100), floor(getSampleRate(1) / 1000 * 400));
+[pwtValley, ~, bp_valley_used] = computeTimeInterval(ecg_peak, bp_valley, floor(getSampleRate(1) / 1000 * 50), floor(getSampleRate(1) / 1000 * 400));
+[pwtKey, ecg_peak_used, bp_key_used] = computeTimeInterval(ecg_peak, bp_key, floor(getSampleRate(1) / 1000 * 50), floor(getSampleRate(1) / 1000 * 400));
+[pwtRise, bp_valley_used1, bp_peak_used1] = computeTimeInterval(bp_valley, bp_peak, 10, floor(getSampleRate(1) / 1000 * 200));
 
 
 %% 步骤5：验证步骤4是否排除了太多点

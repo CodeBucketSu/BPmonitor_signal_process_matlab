@@ -2,11 +2,11 @@ close all
 
 %%预定�?
 %采取の特征点�?��方式
-method = 'PEAK';
+method = 'WAVELET';
 save('method.mat','method');
 %绘图の设�?
 set(0,'DefaultFigureVisible','off');
-needPlot = 0;
+needPlot = 1;
 %存储图片の文件夹名称
 name = 'MultiLinearRegression';
 %说明文件の名�?
@@ -14,10 +14,10 @@ readme = 'readme.md';
 %说明文件中训练集与测试集の标�?
 setMarker = {'**trainset**','**testset**'};
 %采取の脉搏波特征特征�?
-selectedPWFNames = {};%'KVAL','PRT','DPW','DPWr','DiaAr'
+selectedPWFNames = {'KVAL'};%'KVAL','PRT','DPW','DPWr','DiaAr'
 
 disp '请�?择标定数据集�?��的文件夹s';
-paths = uipickfiles('REFilter','\$','FilterSpec','E:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\');
+paths = uipickfiles('REFilter','\$','FilterSpec','L:\young');%'E:\02_MyProjects\BloodPressure\04_softwares\interface_python\BPMonitor_git\data\young\'
 
 if isempty(path)
     return

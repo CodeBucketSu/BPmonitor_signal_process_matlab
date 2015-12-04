@@ -17,7 +17,7 @@ maxInterval = median(peaks(2:end, 1) - peaks(1:end-1, 1)) * 1.2;
 %% 步骤2：小波法使用的参数与状态变量预定义
 confactor = 3;%置信区间因子
 numOfZeroPassPoints = zeros(1,length(onsets(:,1)));%对每个心搏周期存放一个半周期小波变换过零点数量
-range = [200,0,0];%用距离法检测重博波时，加权序列初始值
+range = [0.2 * getSampleRate(2),0,0];%用距离法检测重博波时，加权序列初始值
 
 %% 步骤3：初始化结果数据
 dicNotches = zeros(size(onsets));
@@ -28,8 +28,8 @@ for i = 1 : size(onsets, 1)
     descendingEdge = data(peaks(i, 1) : onsets(i, 1));
     if nargin == 4 && strcmp(method,'WAVELET') == 1
         [dnIdx,dpIdx,numOfZeroPassPoints(i)]=detectDicNotchAndDicPeakInDescendingEdgeUseWavelet( descendingEdge,range(1) );
-        % 衰减法计算新的range序列 - 规定range的每个值必须大于100
-        range = seqShifter(range,dpIdx - dnIdx + 100,i);
+        % 衰减法计算新的range序列 - 规定range的每个值必须大于0.1s
+        range = seqShifter(range,dpIdx - dnIdx + 0.1 * getSampleRate(2),i);
     else
         [dnIdx, dpIdx] = detectDicNotchAndDicPeakInDescendingEdge(descendingEdge, method);%'DISTANCE'); %
     end

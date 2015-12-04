@@ -6,7 +6,7 @@ peaks = detetectPeaksInPulseWave(data, 60);
 
 %% 步骤2：检测脉搏波起点，并与peaks对齐
 onsets_tmp = detectOnsetsInPulseWave(data, peaks);
-onsets = alignDataAccordingToReferenceData(onsets_tmp, peaks, -300, -10);
+onsets = alignDataAccordingToReferenceData(onsets_tmp, peaks, floor(getSampleRate(2) /1000 * -300), -10);
 error = find(onsets(:, 1) == -1);
 if length(error) > 0
     input('error');
@@ -14,14 +14,14 @@ end
 
 %% 步骤3：在每个心动周期的上升沿定位特征点：10%关键点,斜率最大点，并与peaks对齐
 [percent10s, percent50s] = detectCharacteristicPointsInAscendingEdgeOfPulseWave(data, onsets, peaks);
-percent10s = alignDataAccordingToReferenceData(percent10s, peaks, -300, -10);
-percent50s = alignDataAccordingToReferenceData(percent50s, peaks, -200, -10);
+percent10s = alignDataAccordingToReferenceData(percent10s, peaks, floor(getSampleRate(2) /1000 * -300), -10);
+percent50s = alignDataAccordingToReferenceData(percent50s, peaks, floor(getSampleRate(2) /1000 * -200), -10);
 
 %% 步骤4：在每个心动周期的下降沿定位特征点：降中峡，重博波 ，并与peaks对齐
 method=load('method.mat');
-[dicNotches, dicPeaks] = detectCharacteristicPointsInDescendingLimbOfPulseWave(data, onsets, peaks,method.method);%,'WAVELET' ,'DISTANCE'
-dicNotches = alignDataAccordingToReferenceData(dicNotches, peaks, 50, 500);
-dicPeaks = alignDataAccordingToReferenceData(dicPeaks, peaks, 50, 600);
+[dicNotches, dicPeaks] = detectCharacteristicPointsInDescendingLimbOfPulseWave(data, onsets, peaks,'PEAK');%,'WAVELET' ,'DISTANCE' method.method
+dicNotches = alignDataAccordingToReferenceData(dicNotches, peaks, floor(getSampleRate(2) /1000 * 50), floor(getSampleRate(2) /1000 * 500));
+dicPeaks = alignDataAccordingToReferenceData(dicPeaks, peaks, floor(getSampleRate(2) /1000 * 50), floor(getSampleRate(2) /1000 * 600));
 
 % figure, hold on;
 % plot(data, 'k');
