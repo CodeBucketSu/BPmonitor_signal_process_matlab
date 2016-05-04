@@ -9,7 +9,7 @@ function [dicNotch, dicPeak, zeroPassPointsNum ] = detectDicNotchAndDicPeakInDes
 %   zeroPassPointsNum 半心动周期内过零点的数量
 
 %%参数与输出预定义
-resampleInterval = 10;%减采样周期
+resampleInterval = 1;%减采样周期
 dicNotch = -1;
 dicPeak = -1;
 %% 步骤1：信号段减采样与归一化 

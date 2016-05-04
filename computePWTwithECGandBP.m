@@ -11,12 +11,12 @@ function [ pwtPeak, pwtValley, pwtKey, pwtRise, hr, fig, hasError ] = computePWT
 [ecg_peak, hr]=HR_detection(ecg);
 
 %% 步骤3：提取脉搏波关键点
-%[bp_peak, bp_valley, bp_key, bp_rise]= detectPeaksInPulseWave(bp);
-tmpStruct = load('tmpdata.mat');
-bp_peak = tmpStruct.peaks;
-bp_valley = tmpStruct.onsets;
-bp_key = tmpStructent10s;
-bp_rise = tmpStruct.percent50s;
+[bp_peak, bp_valley, bp_key, bp_rise]= detectPeaksInPulseWave(bp);
+% tmpStruct = load('tmpdata.mat');
+% bp_peak = tmpStruct.peaks;
+% bp_valley = tmpStruct.onsets;
+% bp_key = tmpStructent10s;
+% bp_rise = tmpStruct.percent50s;
 
 %% 步骤4：计算pwt,并验证是否排除了太多点
 [pwtPeak, ~, bp_peak_used] = computeTimeInterval(ecg_peak, bp_peak, floor(getSampleRate(1) / 1000 * 100), floor(getSampleRate(1) / 1000 * 400));

@@ -5,7 +5,7 @@ function [HRs, BPs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames] = mainFunc2(path, need
 candidates = {'pf','xc','sj', 'ydh'}; %'pf','xc','sj', 'ydh'
 
 %% 选取数据所在文件夹
-filePathForData = [path, '/data'];
+filePathForData = fullfile(path, 'data');
 
 %% 处理信号
 fileNames = getFileNamesforBatch(candidates,filePathForData); 
@@ -14,6 +14,11 @@ if isempty(fileNames)
 end
 [HRs, BPs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames]...
     = computeAll(filePathForData, fileNames, needPlot, '标定数据');
+
+%% added by henryrhe 4/17/16
+sigs = [HRs, BPs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames];
+save(['henryrhe-4-17-16' '-peak.mat'], 'sigs');
+%% added by henryrhe end
 
 %% 返回
 % PWFs = selectPWFs(HRs, PWTTs, PWFs_elb, PWFs_wrst, PWFnames,selectedPWFNames);

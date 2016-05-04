@@ -1,13 +1,14 @@
 function [peaks] = detetectPeaksInPulseWave(data, HR4ref)
 % function [peaks] = detetectPeaksInPulseWave(data, HR4ref)
-% ÔÚÄ¿±êĞÅºÅÖĞ¼ì²â³öÂú×ãÌõ¼şµÄ·åÖµ£¬ÓÃ´«ÈëµÄĞÄÂÊÑéÖ¤ÕıÈ·ĞÔ
-% ÊäÈë£º
-%   data£ºÄ¿±êĞÅºÅ
-%   HR4ref£º²Î¿¼ĞÄÂÊ
-% Êä³ö£º
-%   peaks£º  N x 2   ·Ö±ğÊÇ²¨·åµÄÎ»ÖÃºÍ²¨·åµÄ·ùÖµ
+% ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½Åºï¿½ï¿½Ğ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½Öµï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤ï¿½ï¿½È·ï¿½ï¿½
+% ï¿½ï¿½ï¿½ë£º
+%   dataï¿½ï¿½Ä¿ï¿½ï¿½ï¿½Åºï¿½
+%   HR4refï¿½ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½
+% ï¿½ï¿½ï¿½ï¿½ï¿½
+%   peaksï¿½ï¿½  N x 2   ï¿½Ö±ï¿½ï¿½Ç²ï¿½ï¿½ï¿½ï¿½Î»ï¿½ÃºÍ²ï¿½ï¿½ï¿½Ä·ï¿½Öµ
 
-peakWidth = floor(getSampleRate(2)/10);
+% peakWidth = floor(getSampleRate(2)/10);
+peakWidth = getSampleRate();
 
 peaks = detetectPeaksUsingWingInSignal(data, peakWidth);
 
